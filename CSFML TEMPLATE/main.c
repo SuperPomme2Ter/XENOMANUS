@@ -11,7 +11,12 @@ struct j {
     sfVector2f force;
     float angle;
     float vitesse;
+    float angleMax;
+    float angleMin;
+    sfVector2f fwdMax;
+    sfVector2f fwdMin;
 };
+
 struct obj {
     sfSprite* sprite;
     sfTexture* texture;
@@ -125,6 +130,8 @@ void gestionJoueur(struct j* joueur) {
         joueur->force.y -= 0.1 * normalized_y * delta / 10000;
     }
     if (joueur->angle <= -360 || joueur->angle >= 360) {
+        joueur->angleMax = 45;
+        joueur->angleMin = -45;
         joueur->angle = 0;
     }
 }
@@ -182,6 +189,8 @@ int main() {
     joueur.texture = sfTexture_createFromFile("fruit.png", NULL);
     joueur.pos = (sfVector2f){ 500,500 };
     joueur.angle = -90;
+    joueur.angleMax = -45;
+    joueur.angleMin = -135;
     joueur.vitesse = 0.5;
     joueur.fwd = (sfVector2f){ 0,0 };
     joueur.force = (sfVector2f){ 0,0 };
@@ -211,10 +220,14 @@ int main() {
 
         if (sfKeyboard_isKeyPressed(sfKeyRight)) {
             joueur.angle += 3 * delta / 10000;
+            joueur.angleMax += 3 * delta / 10000;
+            joueur.angleMin += 3 * delta / 10000;
 
         }
         if (sfKeyboard_isKeyPressed(sfKeyLeft)) {
             joueur.angle -= 3 * delta / 10000;
+            joueur.angleMax -= 3 * delta / 10000;
+            joueur.angleMin -= 3 * delta / 10000;
         }
         if (sfKeyboard_isKeyPressed(sfKeySpace)) {
             if (!press) {
@@ -228,6 +241,12 @@ int main() {
         if (sfKeyboard_isKeyPressed(sfKeyUp)) {
             joueur.fwd.x = cosf(joueur.angle * PI / 180);
             joueur.fwd.y = sinf(joueur.angle * PI / 180);
+
+            joueur.fwdMax.x = cosf(joueur.angleMax * PI / 180);
+            joueur.fwdMax.y = sinf(joueur.angleMax * PI / 180);
+
+            joueur.fwdMin.x = cosf(joueur.angleMin * PI / 180);
+            joueur.fwdMin.y = sinf(joueur.angleMin * PI / 180);
             if (fabs(joueur.force.x + joueur.vitesse * joueur.fwd.x * delta / 10000) < fabs(150 * joueur.fwd.x * delta / 10000)) {
                 joueur.force.x += joueur.vitesse * joueur.fwd.x * delta / 10000;
             }

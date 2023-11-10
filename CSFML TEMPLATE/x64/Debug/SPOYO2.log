@@ -1,24 +1,28 @@
 ﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(531,5): warning MSB8028: Le répertoire intermédiaire (x64\Debug\) contient des fichiers partagés provenant d'un autre projet (SPOYO2.vcxproj). Cela peut entraîner un comportement de nettoyage et de regénération incorrect.
   main.c
-C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(39,13): warning C4244: '=' : conversion de 'sfInt64' en 'float', perte possible de données
-C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(45,18): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
-C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(75,58): warning C4244: 'fonction' : conversion de 'double' en 'float', perte possible de données
-C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(76,58): warning C4244: 'fonction' : conversion de 'double' en 'float', perte possible de données
-C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(93,33): warning C4244: '=' : conversion de 'double' en 'float', perte possible de données
-C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(120,16): warning C4244: '=' : conversion de 'double' en 'float', perte possible de données
-C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(124,55): warning C4244: '-=' : conversion de 'double' en 'float', perte possible de données
-C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(125,55): warning C4244: '-=' : conversion de 'double' en 'float', perte possible de données
-C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(170,34): warning C4305: '=' : troncation de 'double' à 'float'
-C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(221,31): warning C4047: 'fonction' : les niveaux d'indirection de 'obj *' et de 'obj (*)[10]' sont différents
-C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(221,31): warning C4024: 'gestionBullet' : types différents pour le paramètre formel et réel 1
-C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(229,51): warning C4244: 'fonction' : conversion de 'double' en 'float', perte possible de données
-C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(230,51): warning C4244: 'fonction' : conversion de 'double' en 'float', perte possible de données
-C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(247,23): warning C4047: 'fonction' : les niveaux d'indirection de 'obj *' et de 'obj (*)[10]' sont différents
-C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(247,23): warning C4024: 'gestionBullet' : types différents pour le paramètre formel et réel 1
-C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(249,24): warning C4047: 'fonction' : les niveaux d'indirection de 'ennemis *' et de 'ennemis (*)[20]' sont différents
-C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(249,24): warning C4024: 'gestionEnnemis' : types différents pour le paramètre formel et réel 1
-C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(249,43): warning C4047: 'fonction' : les niveaux d'indirection de 'obj *' et de 'obj (*)[10]' sont différents
-C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(249,43): warning C4024: 'gestionEnnemis' : types différents pour le paramètre formel et réel 3
-C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(142,15): warning C4101: 'spriteF' : variable locale non référencée
-C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(141,16): warning C4101: 'textureF' : variable locale non référencée
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(44,13): warning C4244: '=' : conversion de 'sfInt64' en 'float', perte possible de données
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(50,18): warning C4244: 'initialisation' : conversion de 'double' en 'float', perte possible de données
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(80,58): warning C4244: 'fonction' : conversion de 'double' en 'float', perte possible de données
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(81,58): warning C4244: 'fonction' : conversion de 'double' en 'float', perte possible de données
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(98,33): warning C4244: '=' : conversion de 'double' en 'float', perte possible de données
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(125,16): warning C4244: '=' : conversion de 'double' en 'float', perte possible de données
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(129,55): warning C4244: '-=' : conversion de 'double' en 'float', perte possible de données
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(130,55): warning C4244: '-=' : conversion de 'double' en 'float', perte possible de données
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(177,34): warning C4305: '=' : troncation de 'double' à 'float'
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(234,31): warning C4047: 'fonction' : les niveaux d'indirection de 'obj *' et de 'obj (*)[10]' sont différents
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(234,31): warning C4024: 'gestionBullet' : types différents pour le paramètre formel et réel 1
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(242,51): warning C4244: 'fonction' : conversion de 'double' en 'float', perte possible de données
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(243,51): warning C4244: 'fonction' : conversion de 'double' en 'float', perte possible de données
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(245,57): warning C4244: 'fonction' : conversion de 'double' en 'float', perte possible de données
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(246,57): warning C4244: 'fonction' : conversion de 'double' en 'float', perte possible de données
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(248,57): warning C4244: 'fonction' : conversion de 'double' en 'float', perte possible de données
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(249,57): warning C4244: 'fonction' : conversion de 'double' en 'float', perte possible de données
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(266,23): warning C4047: 'fonction' : les niveaux d'indirection de 'obj *' et de 'obj (*)[10]' sont différents
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(266,23): warning C4024: 'gestionBullet' : types différents pour le paramètre formel et réel 1
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(268,24): warning C4047: 'fonction' : les niveaux d'indirection de 'ennemis *' et de 'ennemis (*)[20]' sont différents
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(268,24): warning C4024: 'gestionEnnemis' : types différents pour le paramètre formel et réel 1
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(268,43): warning C4047: 'fonction' : les niveaux d'indirection de 'obj *' et de 'obj (*)[10]' sont différents
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(268,43): warning C4024: 'gestionEnnemis' : types différents pour le paramètre formel et réel 3
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(149,15): warning C4101: 'spriteF' : variable locale non référencée
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(148,16): warning C4101: 'textureF' : variable locale non référencée
   SPOYO2.vcxproj -> C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\x64\Debug\Asteroids.exe
