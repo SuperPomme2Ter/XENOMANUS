@@ -1,0 +1,11 @@
+﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(531,5): warning MSB8028: Le répertoire intermédiaire (x64\Debug\) contient des fichiers partagés provenant d'un autre projet (SPOYO2.vcxproj). Cela peut entraîner un comportement de nettoyage et de regénération incorrect.
+  main.c
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(10,13): warning C4244: '=' : conversion de 'sfInt64' en 'float', perte possible de données
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(100,59): warning C4244: 'fonction' : conversion de 'double' en 'float', perte possible de données
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(101,59): warning C4244: 'fonction' : conversion de 'double' en 'float', perte possible de données
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(115,38): warning C4244: 'fonction' : conversion de 'double' en 'float', perte possible de données
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(116,38): warning C4244: 'fonction' : conversion de 'double' en 'float', perte possible de données
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(133,20): warning C4244: '=' : conversion de 'double' en 'float', perte possible de données
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(137,51): warning C4244: '-=' : conversion de 'double' en 'float', perte possible de données
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(138,51): warning C4244: '-=' : conversion de 'double' en 'float', perte possible de données
+  SPOYO2.vcxproj -> C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\x64\Debug\Asteroids.exe

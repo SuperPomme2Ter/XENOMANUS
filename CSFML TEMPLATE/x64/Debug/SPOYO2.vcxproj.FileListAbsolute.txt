@@ -1,0 +1,2 @@
+C:\Users\Gabriel\source\repos\SPOYO2\x64\Debug\SPOYO2.exe
+C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\x64\Debug\Asteroids.exe
