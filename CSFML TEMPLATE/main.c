@@ -1,8 +1,14 @@
 #include <SFML/Graphics.h>
 #include <math.h>
-#include<stdio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 #define PI 3.1415926535
+
 float delta;
+float angleTest;
+
 struct j {
     sfSprite* sprite;
     sfTexture* texture;
@@ -13,6 +19,7 @@ struct j {
     float vitesse;
     float angleMax;
     float angleMin;
+    int life;
     sfVector2f fwdMax;
     sfVector2f fwdMin;
 };
@@ -38,6 +45,7 @@ struct ennemis {
     float norme;
 };
 
+
 //calcul du temps
 int Delta(sfClock* deltaclock) {
     sfTime dtime = sfClock_getElapsedTime(deltaclock);
@@ -51,8 +59,38 @@ float normalize(float x,float y) {
     return rslt;
 
 }
-void inputs(struct j *joueur, struct obj *bullet,int *press) {
-    
+int timer(sfClock* delai) {
+    sfTime  dt = sfClock_getElapsedTime(delai);
+    float lastMouv = sfTime_asMilliseconds(dt);
+    return lastMouv;
+
+};
+
+void gestionJoueur(struct j* joueur, float delta) {
+    float a_length;
+    float normalized_x;
+    float normalized_y;
+    joueur->pos.x += joueur->force.x * delta / 10000;
+    joueur->pos.y += joueur->force.y * delta / 10000;
+
+    a_length = sqrt(joueur->force.x * joueur->force.x + joueur->force.y * joueur->force.y);
+    if (a_length > 0) {
+        normalized_x = joueur->force.x / a_length;
+        normalized_y = joueur->force.y / a_length;
+        joueur->force.x -= 0.1 * normalized_x * delta / 10000;
+        joueur->force.y -= 0.1 * normalized_y * delta / 10000;
+    }
+    if (joueur->angle <=-360 || joueur->angle >= 360) {
+        joueur->angle = 0;
+    }
+    if (joueur->angleMax <= -360 || joueur->angleMax >= 360) {
+        joueur->angleMax = 0;
+    }
+    if (joueur->angleMin <= -360 || joueur->angleMin >= 360) {
+        joueur->angleMin = 0;
+    }
+
+
 }
 
 void gestionBullet(struct obj *bullet,struct j joueur,int option) {
@@ -88,55 +126,69 @@ void gestionBullet(struct obj *bullet,struct j joueur,int option) {
     }
 }
 
-void gestionEnnemis(struct ennemis *tentacle,struct j joueur,struct obj *bullet)
+int gestionEnnemis(struct ennemis *tentacle, struct j *joueur, struct obj* bullet, int option,int *lostLife)
 {
     float ecart;
     for (int i = 0; i < 20; i++) {
-        if (tentacle[i].exist) {
-            tentacle[i].dir.x = joueur.pos.x - tentacle[i].pos.x;
-            tentacle[i].dir.y = joueur.pos.y - tentacle[i].pos.y;
-            tentacle[i].norme = sqrt(tentacle[i].dir.x * tentacle[i].dir.x + tentacle[i].dir.y * tentacle[i].dir.y);
-            if (tentacle[i].norme > 0) {
-                tentacle[i].dir.x /= tentacle[i].norme;
-                tentacle[i].dir.y /= tentacle[i].norme;
-                tentacle[i].pos.x += tentacle[i].dir.x * tentacle[i].vitesse;
-                tentacle[i].pos.y += tentacle[i].dir.y * tentacle[i].vitesse;
-            }
-            sfSprite_setPosition(tentacle[i].sprite, (sfVector2f) { tentacle[i].pos.x, tentacle[i].pos.y });
-            for (int j = 0; j < 10; j++) {
-                if (bullet[j].visible) {
-                    ecart = normalize(tentacle[i].pos.x - bullet[j].pos.x, tentacle[i].pos.y - bullet[j].pos.y);
-                    if (ecart < 50) {
-                        tentacle[i].exist = 0;
-                        bullet[j].visible = 0;
+        if (!option) {
+            if (tentacle[i].exist) {
+                tentacle[i].dir.x = joueur->pos.x - tentacle[i].pos.x;
+                tentacle[i].dir.y = joueur->pos.y - tentacle[i].pos.y;
+                tentacle[i].norme = sqrt(tentacle[i].dir.x * tentacle[i].dir.x + tentacle[i].dir.y * tentacle[i].dir.y);
+                if (tentacle[i].norme > 0) {
+                    tentacle[i].dir.x /= tentacle[i].norme;
+                    tentacle[i].dir.y /= tentacle[i].norme;
+                    tentacle[i].pos.x += tentacle[i].dir.x * tentacle[i].vitesse;
+                    tentacle[i].pos.y += tentacle[i].dir.y * tentacle[i].vitesse;
+                }
+                sfSprite_setPosition(tentacle[i].sprite, (sfVector2f) { tentacle[i].pos.x, tentacle[i].pos.y });
+                ecart = normalize(tentacle[i].pos.x - joueur->pos.x, tentacle[i].pos.y - joueur->pos.y);
+                if (ecart < 50) {
+                    tentacle[i].exist = 0;
+                    joueur->life -= 1;
+                    *lostLife = 1;
+                }
+                for (int j = 0; j < 10; j++) {
+                    if (bullet[j].visible) {
+                        ecart = normalize(tentacle[i].pos.x - bullet[j].pos.x, tentacle[i].pos.y - bullet[j].pos.y);
+                        if (ecart < 50) {
+                            tentacle[i].exist = 0;
+                            bullet[j].visible = 0;
+                        }
                     }
                 }
             }
         }
-    }
-}
-void gestionJoueur(struct j* joueur) {
-    float a_length;
-    float normalized_x;
-    float normalized_y;
-    joueur->pos.x += joueur->force.x * delta / 10000;
-    joueur->pos.y += joueur->force.y * delta / 10000;
-
-    a_length = sqrt(joueur->force.x * joueur->force.x + joueur->force.y * joueur->force.y);
-    if (a_length > 0) {
-        normalized_x = joueur->force.x / a_length;
-        normalized_y = joueur->force.y / a_length;
-        joueur->force.x -= 0.1 * normalized_x * delta / 10000;
-        joueur->force.y -= 0.1 * normalized_y * delta / 10000;
-    }
-    if (joueur->angle <= -360 || joueur->angle >= 360) {
-        joueur->angleMax = 45;
-        joueur->angleMin = -45;
-        joueur->angle = 0;
+        else {
+            
+            if (!tentacle[i].exist) {
+                float x = rand() % 1600 - 300;
+                float y = rand() % 1600 - 300;
+                float deltaX = joueur->pos.x - x;
+                float deltaY = joueur->pos.y - y;
+                float angle = atan2f(deltaY, deltaX);
+                angle = fabs(angle * (180.0f / PI));
+                if ((angle < fabs(joueur->angleMax) && angle > fabs(joueur->angleMin)) || fabs(deltaX) < 300 || fabs(deltaY) < 300) {
+                    x = rand() % 1600 - 300;
+                    y = rand() % 1600 - 300;
+                    deltaX = joueur->pos.x - x;
+                    deltaY = joueur->pos.y - y;
+                    angle = atan2f(deltaY, deltaX);
+                    angle = fabs(angle * (180.0f / PI));
+                }
+                angleTest = angle;
+                tentacle[i].pos.x = x;
+                tentacle[i].pos.y = y;
+                tentacle[i].exist = 1;
+                break;
+            }
+        }
     }
 }
 
 int main() {
+
+    srand(time(NULL));
 
     sfVideoMode mode = { 1000, 1000, 32 };
     sfRenderWindow* window = sfRenderWindow_create(mode, "Xenomanus", sfResize | sfClose, NULL);
@@ -145,9 +197,28 @@ int main() {
     sfTexture* textureTest;
     sfSprite* test;
     sfClock* deltaclock = sfClock_create();
+    sfClock* Event = sfClock_create();
+    sfClock* eventLostLife = sfClock_create();
     sfTexture* textureF;
     sfSprite* spriteF;
+    sfText* life;
+    sfFont* font; 
 
+    char txtLife[3][80] = {
+        "You have been hit by something.",
+        "You're bleeding !",
+        "As you fall, you passed away,\nSoon to be catch by the creature."
+
+    };
+    font = sfFont_createFromFile("arial.ttf");
+    life = sfText_create();
+
+    sfText_setFont(life, font);
+    sfText_setOrigin(life, (sfVector2f) { 0, 25 });
+    sfText_setCharacterSize(life, 40);
+    sfText_setPosition(life, (sfVector2f) { 300, 700 });
+    sfText_setColor(life, (sfColor) { 255, 0, 0, 255 });
+    
     struct obj bullet[10];
     for (int i = 0; i < 10; i++) {
         bullet[i].sprite = sfSprite_create();
@@ -181,7 +252,6 @@ int main() {
         sfSprite_setPosition(tentacle[i].sprite, (sfVector2f) { tentacle[i].pos.x, tentacle[i].pos.y });
         sfSprite_setTexture(tentacle[i].sprite, tentacle[i].texture, sfTrue);
     }
-    tentacle[2].exist = 1;
 
     struct j joueur;
     joueur.sprite = sfSprite_create();
@@ -189,11 +259,12 @@ int main() {
     joueur.texture = sfTexture_createFromFile("fruit.png", NULL);
     joueur.pos = (sfVector2f){ 500,500 };
     joueur.angle = -90;
-    joueur.angleMax = -45;
-    joueur.angleMin = -135;
+    joueur.angleMax = 120;
+    joueur.angleMin = 60;
     joueur.vitesse = 0.5;
     joueur.fwd = (sfVector2f){ 0,0 };
     joueur.force = (sfVector2f){ 0,0 };
+    joueur.life = 3;
     sfSprite_setPosition(joueur.sprite, (sfVector2f) { joueur.pos.x, joueur.pos.y });
     sfSprite_setTexture(joueur.sprite, joueur.texture, sfTrue);
 
@@ -210,6 +281,11 @@ int main() {
     sfSprite_setTexture(spriteL, textureL, sfTrue);
 
     int press = 0;
+    int delai;
+    int apparition = 5000;
+    int lostLife = 0;
+    int delaiTxt = 6000;
+    
 
     while (sfRenderWindow_isOpen(window)) {
         sfEvent event;
@@ -225,9 +301,9 @@ int main() {
 
         }
         if (sfKeyboard_isKeyPressed(sfKeyLeft)) {
-            joueur.angle -= 3 * delta / 10000;
-            joueur.angleMax -= 3 * delta / 10000;
-            joueur.angleMin -= 3 * delta / 10000;
+            joueur.angle -= 2 * delta / 10000;
+            joueur.angleMax -= 2 * delta / 10000;
+            joueur.angleMin -= 2 * delta / 10000;
         }
         if (sfKeyboard_isKeyPressed(sfKeySpace)) {
             if (!press) {
@@ -241,12 +317,6 @@ int main() {
         if (sfKeyboard_isKeyPressed(sfKeyUp)) {
             joueur.fwd.x = cosf(joueur.angle * PI / 180);
             joueur.fwd.y = sinf(joueur.angle * PI / 180);
-
-            joueur.fwdMax.x = cosf(joueur.angleMax * PI / 180);
-            joueur.fwdMax.y = sinf(joueur.angleMax * PI / 180);
-
-            joueur.fwdMin.x = cosf(joueur.angleMin * PI / 180);
-            joueur.fwdMin.y = sinf(joueur.angleMin * PI / 180);
             if (fabs(joueur.force.x + joueur.vitesse * joueur.fwd.x * delta / 10000) < fabs(150 * joueur.fwd.x * delta / 10000)) {
                 joueur.force.x += joueur.vitesse * joueur.fwd.x * delta / 10000;
             }
@@ -261,17 +331,29 @@ int main() {
             joueur.force.y = 0;
         }
         
-        gestionJoueur(&joueur);
+        gestionJoueur(&joueur,delta);
 
         gestionBullet(&bullet, joueur, 1);
-        
-        gestionEnnemis(&tentacle, joueur, &bullet);
 
+
+        delai=timer(Event);
+        if (delai >= apparition) {
+            sfClock_restart(Event);
+            delai = 0;
+            gestionEnnemis(tentacle, &joueur, &bullet, 1,&lostLife);
+            if (apparition > 10) {
+                apparition -= 10;
+            }
+            
+        }
+        printf("%d\n",joueur.life);
+        gestionEnnemis(&tentacle, &joueur, &bullet,0,&lostLife);
+        
         sfSprite_setRotation(spriteL, joueur.angle - 90);
         sfSprite_setRotation(joueur.sprite, joueur.angle - 90);
 
         Delta(deltaclock);
-        //   printf("%f\n", angle);
+        
         sfRenderWindow_clear(window, sfWhite);
         sfRenderWindow_drawSprite(window, test, NULL);
         for (int i = 0; i < 10; i++) {
@@ -285,6 +367,24 @@ int main() {
             }
         }
         sfRenderWindow_drawSprite(window, spriteL, NULL);
+        if (lostLife || delaiTxt <= 5000) {
+            if (delaiTxt > 5000) {
+                lostLife = 0;
+                sfClock_restart(eventLostLife);
+                sfText_setColor(life, (sfColor) { 255, 0, 0, 255 });
+            }
+            delaiTxt = timer(eventLostLife);
+            if (joueur.life > 0) {
+                sfText_setString(life, txtLife[2 - joueur.life]);// ?
+
+            }
+            else {
+                sfText_setString(life, txtLife[2]);
+            }
+            sfText_setColor(life, (sfColor) { 255, delaiTxt / 10, delaiTxt / 10, 255 });
+            sfRenderWindow_drawText(window, life, NULL);
+
+        }
         sfSprite_setPosition(spriteL, (sfVector2f) { joueur.pos.x, joueur.pos.y
         });
         sfSprite_setPosition(joueur.sprite, (sfVector2f) { joueur.pos.x, joueur.pos.y
@@ -310,6 +410,9 @@ int main() {
     sfTexture_destroy(textureL);
     sfSprite_destroy(test);
     sfTexture_destroy(textureTest);
+    sfText_destroy(life);
+    sfFont_destroy(font);
     sfClock_destroy(deltaclock);
+    sfClock_destroy(Event);
     sfRenderWindow_destroy(window);
 }
