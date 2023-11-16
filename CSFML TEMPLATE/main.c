@@ -44,13 +44,16 @@ struct ennemis {
     float angle;
     float norme;
 };
+struct lettre {
+    sfText* text;
+    sfVector2f pos;
+};
 
 
 //calcul du temps
 int Delta(sfClock* deltaclock) {
     sfTime dtime = sfClock_getElapsedTime(deltaclock);
     delta = sfTime_asMicroseconds(dtime);
-
     sfClock_restart(deltaclock);
     return 0;
 };
@@ -201,8 +204,11 @@ int main() {
     sfClock* eventLostLife = sfClock_create();
     sfTexture* textureF;
     sfSprite* spriteF;
+ //   sfText* launch;
+ //   sfText* quit;
     sfText* life;
     sfFont* font; 
+    sfFont* oscour;
 
     char txtLife[3][80] = {
         "You have been hit by something.",
@@ -210,6 +216,7 @@ int main() {
         "As you fall, you passed away,\nSoon to be catch by the creature."
 
     };
+    oscour = sfFont_createFromFile("wingding.ttf");
     font = sfFont_createFromFile("arial.ttf");
     life = sfText_create();
 
@@ -218,6 +225,32 @@ int main() {
     sfText_setCharacterSize(life, 40);
     sfText_setPosition(life, (sfVector2f) { 300, 700 });
     sfText_setColor(life, (sfColor) { 255, 0, 0, 255 });
+
+    
+    char titleTxt[9][3] = {
+        "X",
+        "e",
+        "n",
+        "o",
+        "m",
+        "a",
+        "n",
+        "u",
+        "s",
+    };
+    struct lettre title[9];
+    for (int i = 0; i < 9; i++) {
+        title[i].text= sfText_create();
+        title[i].pos = (sfVector2f){400+40*i,300};
+        sfText_setFont(title[i].text, font);
+        sfText_setCharacterSize(title[i].text, 40);
+        sfText_setPosition(title[i].text, (sfVector2f) { title[i].pos.x, title[i].pos.y
+        });
+        sfText_setColor(title[i].text, (sfColor) { 255, 255, 255, 255 });
+        sfText_setString(title[i].text, titleTxt[i]);
+    }
+    
+
     
     struct obj bullet[10];
     for (int i = 0; i < 10; i++) {
@@ -285,7 +318,10 @@ int main() {
     int apparition = 5000;
     int lostLife = 0;
     int delaiTxt = 6000;
-    
+    int gameState = 0;
+    int transition = 0;
+    int tmp;
+    int rollTitle;
 
     while (sfRenderWindow_isOpen(window)) {
         sfEvent event;
@@ -293,7 +329,30 @@ int main() {
             if (event.type == sfEvtClosed)
                 sfRenderWindow_close(window);
         }
-
+        sfClock_restart(Event);
+        tmp = 0;
+        while (!gameState) {
+            while (sfRenderWindow_pollEvent(window, &event)) {
+                if (event.type == sfEvtClosed)
+                    sfRenderWindow_close(window);
+            }
+            tmp = timer(Event);
+            sfRenderWindow_clear(window, sfBlack);
+            if (tmp % 80 == 0) {
+                if (!transition) {
+                    rollTitle = rand() % 9;
+                    sfText_setFont(title[rollTitle].text, oscour);
+                    transition = 1;
+                }else{
+                    sfText_setFont(title[rollTitle].text, font);
+                    transition = 0;
+                }
+            }
+            for (int i = 0; i < 9; i++) {
+                sfRenderWindow_drawText(window, title[i].text, NULL);
+            }
+            sfRenderWindow_display(window);
+        }
         if (sfKeyboard_isKeyPressed(sfKeyRight)) {
             joueur.angle += 3 * delta / 10000;
             joueur.angleMax += 3 * delta / 10000;
@@ -410,6 +469,11 @@ int main() {
     sfTexture_destroy(textureL);
     sfSprite_destroy(test);
     sfTexture_destroy(textureTest);
+    for (int i = 0; i < 9; i++) {
+        sfText_destroy(title[i].text);
+    }
+ //   sfText_destroy(launch);
+ //   sfText_destroy(quit);
     sfText_destroy(life);
     sfFont_destroy(font);
     sfClock_destroy(deltaclock);
