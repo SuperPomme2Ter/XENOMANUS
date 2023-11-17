@@ -770,6 +770,17 @@ int main() {
                 sfRenderWindow_drawSprite(window, boss.sprite, NULL);
             }
             sfRenderWindow_drawSprite(window, spriteL, NULL);
+            
+            sfSprite_setPosition(spriteL, (sfVector2f) {
+                joueur.pos.x, joueur.pos.y
+            });
+            sfSprite_setPosition(joueur.sprite, (sfVector2f) {
+                joueur.pos.x, joueur.pos.y
+            });
+            sfRenderWindow_drawSprite(window, joueur.sprite, NULL);
+            sfRenderWindow_drawSprite(window, arbre, NULL);
+            sfRenderWindow_drawSprite(window, arbre1, NULL);
+            sfRenderWindow_drawSprite(window, arbre2, NULL);
             if (lostLife || delaiTxt <= 5000) {
                 if (delaiTxt > 5000) {
                     lostLife = 0;
@@ -790,16 +801,6 @@ int main() {
                 sfRenderWindow_drawText(window, life, NULL);
 
             }
-            sfSprite_setPosition(spriteL, (sfVector2f) {
-                joueur.pos.x, joueur.pos.y
-            });
-            sfSprite_setPosition(joueur.sprite, (sfVector2f) {
-                joueur.pos.x, joueur.pos.y
-            });
-            sfRenderWindow_drawSprite(window, joueur.sprite, NULL);
-            sfRenderWindow_drawSprite(window, arbre, NULL);
-            sfRenderWindow_drawSprite(window, arbre1, NULL);
-            sfRenderWindow_drawSprite(window, arbre2, NULL);
             sfRenderWindow_drawText(window, affScore, NULL);
 
 
