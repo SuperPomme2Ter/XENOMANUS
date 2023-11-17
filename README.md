@@ -1,4 +1,4 @@
 # Asteroids
-The game should be in the Game Branch
+The game should be here
 in CSFML TEMPLATE
 Open it with the .sln
