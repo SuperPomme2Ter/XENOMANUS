@@ -230,18 +230,21 @@ int gestionEnnemis(struct ennemis *tentacle, struct j *joueur, struct obj* bulle
         }
         //used when the boss dies, spawn 5 tentacles
         if (option == 2) {
+            for (int i = 0; i < 10; i++) {
+                bullet[i].visible = 0;
+            }
             if (nbNewEnnemis<5){
                 if (!tentacle[i].exist) {
-                    float x =(rand() % 600 )+ (int)boss.pos.x - 300;
-                    float y =(rand() % 600 )+ (int)boss.pos.y - 300;
+                    float x =(rand() % 100 )+ (int)boss.pos.x - 200;
+                    float y =(rand() % 100 )+ (int)boss.pos.y - 200;
                     float deltaX = joueur->pos.x - x;
                     float deltaY = joueur->pos.y - y;
                     float angle = atan2f(deltaY, deltaX);
                     angle = fabs(angle * (180.0f / PI));
                     for (int k = 0; k < 200; k++ ) {
                         if ((angle < fabs(joueur->angleMax) && angle > fabs(joueur->angleMin)) || fabs(deltaX) < 300 || fabs(deltaY) < 300) {
-                            x = rand() % 1600 - 300;
-                            y = rand() % 1600 - 300;
+                            x = (rand() % 100) + (int)boss.pos.x - 200;
+                            y = (rand() % 100) + (int)boss.pos.y - 200;
                             deltaX = joueur->pos.x - x;
                             deltaY = joueur->pos.y - y;
                             angle = atan2f(deltaY, deltaX);
@@ -263,7 +266,7 @@ int gestionEnnemis(struct ennemis *tentacle, struct j *joueur, struct obj* bulle
 }
 
 //manage the boss's movements, collisions and his spawn
-int gestionBoss(struct big_thing *boss, struct j* joueur, struct obj* bullet, int option, int* lostLife, sfText* affScore)
+int gestionBoss(struct big_thing *boss, struct j* joueur, struct obj *bullet, int option, int* lostLife, sfText* affScore)
 {
     float ecart;
     char score[20];
@@ -319,7 +322,7 @@ int gestionBoss(struct big_thing *boss, struct j* joueur, struct obj* bullet, in
         boss->pos.x = x;
         boss->pos.y = y;
         boss->ugly = 1;
-        boss->hp = 30;
+        boss->hp = 20;
     }
 }
 
@@ -561,6 +564,7 @@ int main() {
     int transition = 0;
     int tmp;
     int rollTitle;
+    int hold=0;
 
     while (sfRenderWindow_isOpen(window)) {
         sfEvent event;
@@ -716,13 +720,14 @@ int main() {
                 }
 
             }
-            if (joueur.score!=0 && joueur.score % 10 == 0 && !boss.ugly) {
+            if (joueur.score!=0 && joueur.score % 10 == 0 && !boss.ugly && joueur.score!=hold) {
                 gestionBoss(&boss, &joueur, &bullet, 1, &lostLife, affScore);
+                hold = joueur.score;
             }
             if (boss.ugly) {
                 gestionBoss(&boss, &joueur, &bullet, 0, &lostLife, affScore);
                 if (boss.hp <= 0) {
-                    gestionEnnemis(tentacle, &joueur, &bullet, 2, &lostLife, affScore,boss);
+                      gestionEnnemis(tentacle, &joueur, &bullet, 2, &lostLife, affScore,boss);
                     boss.ugly = 0;
                 }
             }
@@ -842,6 +847,15 @@ int main() {
         joueur.force = (sfVector2f){ 0,0 };
         joueur.life = 3;
         joueur.score = 0;
+        boss.dir.x = 0;
+        boss.dir.y = 0;
+        boss.pos.x = 0;
+        boss.pos.y = 0;
+        boss.vitesse = 0.05;
+        boss.ugly = 0;
+        boss.angle = -90;
+        boss.norme = 0;
+        boss.hp = 20;
         sfSprite_setPosition(joueur.sprite, (sfVector2f) { joueur.pos.x, joueur.pos.y });
         sfSprite_setPosition(arrow, (sfVector2f) { 400, 700 });
         sfSprite_setPosition(test, (sfVector2f) { 0, 0 });
@@ -851,6 +865,7 @@ int main() {
         sfSprite_setPosition(test2, (sfVector2f) { 0, -2000 });
         sfSprite_setTexture(test2, textureTest, sfTrue);
         sfSprite_setPosition(spriteL, (sfVector2f) { joueur.pos.x, joueur.pos.y });
+        sfText_setString(affScore, joueur.score);
         press = 0;
         apparition = 5000;
         lostLife = 0;
