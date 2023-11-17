@@ -6,9 +6,10 @@
 #include <time.h>
 #define PI 3.1415926535
 
+//necesary for time
 float delta;
-float angleTest;
 
+//holds the differents caracteristics of the player
 struct j {
     sfSprite* sprite;
     sfTexture* texture;
@@ -25,6 +26,7 @@ struct j {
     sfVector2f fwdMin;
 };
 
+//holds the caracteristics used for the bullets
 struct obj {
     sfSprite* sprite;
     sfTexture* texture;
@@ -35,6 +37,8 @@ struct obj {
     float vitesse;
     float angle;
 };
+
+//tentacules use this struct
 struct ennemis {
     sfSprite* sprite;
     sfTexture* texture;
@@ -44,7 +48,10 @@ struct ennemis {
     float vitesse;
     float angle;
     float norme;
+    float toJ;
 };
+
+//the boss uses this struct
 struct big_thing {
     sfSprite* sprite;
     sfTexture* texture;
@@ -56,24 +63,30 @@ struct big_thing {
     float norme;
     int hp;
 };
+
+//this struct is used for the title screen
 struct lettre {
     sfText* text;
     sfVector2f pos;
 };
 
 
-//calcul du temps
+//time
 int Delta(sfClock* deltaclock) {
     sfTime dtime = sfClock_getElapsedTime(deltaclock);
     delta = sfTime_asMicroseconds(dtime);
     sfClock_restart(deltaclock);
     return 0;
 };
+
 float normalize(float x,float y) {
     float rslt = sqrt(x * x + y * y);
     return rslt;
 
 }
+
+//return the time elapsed since the restart of the clock, used for making event between that last a certain
+//period of time
 int timer(sfClock* delai) {
     sfTime  dt = sfClock_getElapsedTime(delai);
     float lastMouv = sfTime_asMilliseconds(dt);
@@ -81,6 +94,7 @@ int timer(sfClock* delai) {
 
 };
 
+//manage all the calculation concerning the player
 void gestionJoueur(struct j* joueur, float delta) {
     float a_length;
     float normalized_x;
@@ -108,6 +122,7 @@ void gestionJoueur(struct j* joueur, float delta) {
     
 }
 
+//manage the creation, the movement and calculation needed for the bullets
 void gestionBullet(struct obj *bullet,struct j joueur,int option) {
     for (int i = 0; i < 10; i++) {
         if (option) {
@@ -141,6 +156,7 @@ void gestionBullet(struct obj *bullet,struct j joueur,int option) {
     }
 }
 
+//manage the creation, destruction, movement and collision of the tentacles
 int gestionEnnemis(struct ennemis *tentacle, struct j *joueur, struct obj* bullet, int option,int *lostLife, sfText* affScore,struct big_thing boss)
 {
     float ecart;
@@ -158,7 +174,12 @@ int gestionEnnemis(struct ennemis *tentacle, struct j *joueur, struct obj* bulle
                     tentacle[i].pos.x += tentacle[i].dir.x * tentacle[i].vitesse;
                     tentacle[i].pos.y += tentacle[i].dir.y * tentacle[i].vitesse;
                 }
+                float deltaX = joueur->pos.x- tentacle[i].pos.x;
+                float deltaY = joueur->pos.y- tentacle[i].pos.y;
+                float angle = atan2f(deltaY, deltaX);
+                angle = angle * (180.0f / PI);
                 sfSprite_setPosition(tentacle[i].sprite, (sfVector2f) { tentacle[i].pos.x, tentacle[i].pos.y });
+                sfSprite_setRotation(tentacle[i].sprite, angle+90);
                 ecart = normalize(tentacle[i].pos.x - joueur->pos.x, tentacle[i].pos.y - joueur->pos.y);
                 if (ecart < 100) {
                     tentacle[i].exist = 0;
@@ -201,13 +222,13 @@ int gestionEnnemis(struct ennemis *tentacle, struct j *joueur, struct obj* bulle
                         break;
                     }
                 }
-                angleTest = angle;
                 tentacle[i].pos.x = x;
                 tentacle[i].pos.y = y;
                 tentacle[i].exist = 1;
                 break;
             }
         }
+        //used when the boss dies, spawn 5 tentacles
         if (option == 2) {
             if (nbNewEnnemis<5){
                 if (!tentacle[i].exist) {
@@ -227,7 +248,6 @@ int gestionEnnemis(struct ennemis *tentacle, struct j *joueur, struct obj* bulle
                             angle = fabs(angle * (180.0f / PI));
                         }
                     }
-                    angleTest = angle;
                     tentacle[i].pos.x = x;
                     tentacle[i].pos.y = y;
                     tentacle[i].exist = 1;
@@ -242,6 +262,7 @@ int gestionEnnemis(struct ennemis *tentacle, struct j *joueur, struct obj* bulle
     }
 }
 
+//manage the boss's movements, collisions and his spawn
 int gestionBoss(struct big_thing *boss, struct j* joueur, struct obj* bullet, int option, int* lostLife, sfText* affScore)
 {
     float ecart;
@@ -314,12 +335,16 @@ int main() {
     sfSprite* test;
     sfSprite* test1;
     sfSprite* test2;
+    sfSprite* arbre;
+    sfSprite* arbre1;
+    sfSprite* arbre2;
     sfClock* deltaclock = sfClock_create();
     sfClock* Event = sfClock_create();
     sfClock* eventLostLife = sfClock_create();
     sfTexture* textureF;
     sfSprite* spriteF;
     sfTexture* textureArrow;
+    sfTexture* textureArbre;
     sfSprite* arrow;
     sfText* launch;
     sfText* quit;
@@ -330,6 +355,7 @@ int main() {
     sfFont* font; 
     sfFont* oscour;
 
+    int easterEgg = rand() % 7;
     char txtLife[3][80] = {
         "You have been hit by something.",
         "You're bleeding !",
@@ -387,6 +413,7 @@ int main() {
     sfText_setPosition(gameOver, (sfVector2f) { 330, 300 });
     sfText_setColor(gameOver, (sfColor) { 255, 0, 0, 0 });
 
+    //title change font of one of his char so I need to declare it like this :/
     char titleTxt[9][3] = {
         "X",
         "e",
@@ -410,8 +437,7 @@ int main() {
         sfText_setString(title[i].text, titleTxt[i]);
     }
     
-
-    
+    //
     struct obj bullet[10];
     for (int i = 0; i < 10; i++) {
         bullet[i].sprite = sfSprite_create();
@@ -433,7 +459,12 @@ int main() {
     for (int i = 0; i < 20; i++) {
         tentacle[i].sprite = sfSprite_create();
         sfSprite_setOrigin(tentacle[i].sprite, (sfVector2f) { 50, 50 });
-        tentacle[i].texture = sfTexture_createFromFile("tentacule.png", NULL);//100 sur 100 pixels
+        if (easterEgg==1) {
+            tentacle[i].texture = sfTexture_createFromFile("tentaculeBaguette.png", NULL);
+        }
+        else {
+            tentacle[i].texture = sfTexture_createFromFile("tentacule.png", NULL);//100 sur 100 pixels
+        }
         tentacle[i].dir.x = 0;
         tentacle[i].dir.y = 0;
         tentacle[i].pos.x = 0;
@@ -448,7 +479,14 @@ int main() {
     struct big_thing boss;
     boss.sprite = sfSprite_create();
     sfSprite_setOrigin(boss.sprite, (sfVector2f) { 100, 100 });
-    boss.texture = sfTexture_createFromFile("gars_pas_content.png", NULL);//200 sur 200 pixels
+    if (easterEgg==1) {
+        boss.texture = sfTexture_createFromFile("BossBaguette.png", NULL);
+    }
+    else {
+        boss.texture = sfTexture_createFromFile("boss.png", NULL);
+    }
+    //200 sur 200 pixels
+
     boss.dir.x = 0;
     boss.dir.y = 0;
     boss.pos.x = 0;
@@ -463,10 +501,11 @@ int main() {
 
     struct j joueur;
     joueur.sprite = sfSprite_create();
-    sfSprite_setOrigin(joueur.sprite, (sfVector2f) { 8, 8 });
-    joueur.texture = sfTexture_createFromFile("fruit.png", NULL);
+    sfSprite_setOrigin(joueur.sprite, (sfVector2f) { 50, 50 });
+    joueur.texture = sfTexture_createFromFile("MC.png", NULL);
     joueur.pos = (sfVector2f){ 500,500 };
     joueur.angle = -90;
+    //since we are in degrees, these are the corrects value for the angle
     joueur.angleMax = 120;
     joueur.angleMin = 60;
     joueur.vitesse = 0.5;
@@ -487,13 +526,24 @@ int main() {
     test = sfSprite_create();
     test1 = sfSprite_create();
     test2 = sfSprite_create();
-    textureTest = sfTexture_createFromFile("test.png", NULL);
+    arbre = sfSprite_create();
+    arbre1 = sfSprite_create();
+    arbre2 = sfSprite_create();
+    textureTest = sfTexture_createFromFile("MapGround.png", NULL);
+    textureArbre = sfTexture_createFromFile("MAP_TOP.png", NULL);
     sfSprite_setPosition(test, (sfVector2f) { 0, 0 });
     sfSprite_setTexture(test, textureTest, sfTrue);
     sfSprite_setPosition(test1, (sfVector2f) { 0, -1000 });
     sfSprite_setTexture(test1, textureTest, sfTrue);
     sfSprite_setPosition(test2, (sfVector2f) { 0, -2000 });
     sfSprite_setTexture(test2, textureTest, sfTrue);
+    sfSprite_setPosition(arbre, (sfVector2f) { 0, 0 });
+    sfSprite_setTexture(arbre, textureArbre, sfTrue);
+    sfSprite_setPosition(arbre1, (sfVector2f) { 0, -1000 });
+    sfSprite_setTexture(arbre1, textureArbre, sfTrue);
+    sfSprite_setPosition(arbre2, (sfVector2f) { 0, -2000 });
+    sfSprite_setTexture(arbre2, textureArbre, sfTrue);
+
 
     spriteL = sfSprite_create();
     textureL = sfTexture_createFromFile("lumière.png", NULL);
@@ -637,10 +687,10 @@ int main() {
             if (sfKeyboard_isKeyPressed(sfKeyUp)) {
                 joueur.fwd.x = cosf(joueur.angle * PI / 180);
                 joueur.fwd.y = sinf(joueur.angle * PI / 180);
-                if (fabs(joueur.force.x + joueur.vitesse * joueur.fwd.x * delta / 10000) < fabs(150 * joueur.fwd.x * delta / 10000)) {
+                if (fabs(joueur.force.x + joueur.vitesse * joueur.fwd.x * delta / 10000) < fabs(100 * joueur.fwd.x * delta / 10000)) {
                     joueur.force.x += joueur.vitesse * joueur.fwd.x * delta / 10000;
                 }
-                if (fabs(joueur.force.y + joueur.vitesse * joueur.fwd.y * delta / 10000) < fabs(150 * joueur.fwd.y * delta / 10000)) {
+                if (fabs(joueur.force.y + joueur.vitesse * joueur.fwd.y * delta / 10000) < fabs(100 * joueur.fwd.y * delta / 10000)) {
                     joueur.force.y += joueur.vitesse * joueur.fwd.y * delta / 10000;
                 }
             }
@@ -666,7 +716,7 @@ int main() {
                 }
 
             }
-            if (joueur.score!=0 && joueur.score % 5 == 0 && !boss.ugly) {
+            if (joueur.score!=0 && joueur.score % 10 == 0 && !boss.ugly) {
                 gestionBoss(&boss, &joueur, &bullet, 1, &lostLife, affScore);
             }
             if (boss.ugly) {
@@ -684,10 +734,16 @@ int main() {
             sfSprite_move(test, (sfVector2f) { 0, delta/1000});
             sfSprite_move(test1, (sfVector2f) { 0, delta/1000});
             sfSprite_move(test2, (sfVector2f) { 0, delta/1000});
+            sfSprite_move(arbre, (sfVector2f) { 0, delta / 1000 });
+            sfSprite_move(arbre1, (sfVector2f) { 0, delta / 1000 });
+            sfSprite_move(arbre2, (sfVector2f) { 0, delta / 1000 });
             if (sfSprite_getPosition(test2).y >= 0) {
                 sfSprite_setPosition(test, (sfVector2f) { 0, 0 });
                 sfSprite_setPosition(test1, (sfVector2f) { 0, -1000 });
                 sfSprite_setPosition(test2, (sfVector2f) { 0, -2000 });
+                sfSprite_setPosition(arbre, (sfVector2f) { 0, 0 });
+                sfSprite_setPosition(arbre1, (sfVector2f) { 0, -1000 });
+                sfSprite_setPosition(arbre2, (sfVector2f) { 0, -2000 });
             }
             Delta(deltaclock);
 
@@ -736,6 +792,9 @@ int main() {
                 joueur.pos.x, joueur.pos.y
             });
             sfRenderWindow_drawSprite(window, joueur.sprite, NULL);
+            sfRenderWindow_drawSprite(window, arbre, NULL);
+            sfRenderWindow_drawSprite(window, arbre1, NULL);
+            sfRenderWindow_drawSprite(window, arbre2, NULL);
             sfRenderWindow_drawText(window, affScore, NULL);
 
 
@@ -748,6 +807,55 @@ int main() {
         delaiTxt = timer(eventLostLife);
         sfColor gameOverClr;
         int restart=0;
+        sfText_setPosition(life, (sfVector2f) { 300, 700 });
+        sfText_setColor(life, (sfColor) { 255, 0, 0, 255 });
+        sfText_setColor(gameOver, (sfColor) { 255, 0, 0, 0 });
+        for (int i = 0; i < 10; i++) {
+            bullet[i].dir.x = 0;
+            bullet[i].dir.y = 0;
+            bullet[i].pos.x = 500;
+            bullet[i].pos.y = 500;
+            bullet[i].vitesse = 1;
+            bullet[i].visible = 0;
+            bullet[i].force.x = 0;
+            bullet[i].force.y = 0;
+            bullet[i].angle = -90;
+            sfSprite_setPosition(bullet[i].sprite, (sfVector2f) { bullet[i].pos.x, bullet[i].pos.y });
+        }
+        for (int i = 0; i < 20; i++) {
+            tentacle[i].dir.x = 0;
+            tentacle[i].dir.y = 0;
+            tentacle[i].pos.x = 0;
+            tentacle[i].pos.y = 0;
+            tentacle[i].vitesse = 0.1;
+            tentacle[i].exist = 0;
+            tentacle[i].angle = -90;
+            tentacle[i].norme = 0;
+            sfSprite_setPosition(tentacle[i].sprite, (sfVector2f) { tentacle[i].pos.x, tentacle[i].pos.y });
+        }
+        joueur.pos = (sfVector2f){ 500,500 };
+        joueur.angle = -90;
+        joueur.angleMax = 120;
+        joueur.angleMin = 60;
+        joueur.vitesse = 0.5;
+        joueur.fwd = (sfVector2f){ 0,0 };
+        joueur.force = (sfVector2f){ 0,0 };
+        joueur.life = 3;
+        joueur.score = 0;
+        sfSprite_setPosition(joueur.sprite, (sfVector2f) { joueur.pos.x, joueur.pos.y });
+        sfSprite_setPosition(arrow, (sfVector2f) { 400, 700 });
+        sfSprite_setPosition(test, (sfVector2f) { 0, 0 });
+        sfSprite_setTexture(test, textureTest, sfTrue);
+        sfSprite_setPosition(test1, (sfVector2f) { 0, -1000 });
+        sfSprite_setTexture(test1, textureTest, sfTrue);
+        sfSprite_setPosition(test2, (sfVector2f) { 0, -2000 });
+        sfSprite_setTexture(test2, textureTest, sfTrue);
+        sfSprite_setPosition(spriteL, (sfVector2f) { joueur.pos.x, joueur.pos.y });
+        press = 0;
+        apparition = 5000;
+        lostLife = 0;
+        delaiTxt = 6000;
+        transition = 0;
         sfText_setPosition(life, (sfVector2f) { 200, 500 });
         sfSprite_setPosition(arrow, (sfVector2f) { 400, 700 });
         while (gameState == 2) {
@@ -765,72 +873,69 @@ int main() {
                 restart = 1;
             }
             if (restart) {
-                if (sfKeyboard_isKeyPressed(sfKeyDown) && sfSprite_getPosition(arrow).y == 700) {
-                    sfSprite_setPosition(arrow, (sfVector2f) { 400, 800 });
+                if (sfKeyboard_isKeyPressed(sfKeyDown)) {
+                    if (!press) {
+                        if (sfSprite_getPosition(arrow).y == 740) {
+                            sfSprite_setPosition(arrow, (sfVector2f) { 600, 780 });
+                        }
+                        if (sfSprite_getPosition(arrow).y == 700 && sfSprite_getPosition(arrow).x == 400) {
+                            sfSprite_setPosition(arrow, (sfVector2f) { 400, 800 });
+                        }
+                        if (sfSprite_getPosition(arrow).y == 700 && sfSprite_getPosition(arrow).x == 600) {
+                            sfSprite_setPosition(arrow, (sfVector2f) { 600, 740 });
+                        }
+                    }
+                    press = 1;
                 }
-                if (sfKeyboard_isKeyPressed(sfKeyUp) && sfSprite_getPosition(arrow).y == 800) {
-                    sfSprite_setPosition(arrow, (sfVector2f) { 400, 700 });
+                if (sfKeyboard_isKeyPressed(sfKeyUp)) {
+                    if (!press) {
+                        if (sfSprite_getPosition(arrow).y == 800) {
+                            sfSprite_setPosition(arrow, (sfVector2f) { 400, 700 });
+                        }
+                        if (sfSprite_getPosition(arrow).y == 740) {
+                            sfSprite_setPosition(arrow, (sfVector2f) { 600, 700 });
+                        }
+                        if (sfSprite_getPosition(arrow).y == 780) {
+                            sfSprite_setPosition(arrow, (sfVector2f) { 600, 740 });
+                        }
+                    }
+                    press = 1;
                 }
                 if (sfKeyboard_isKeyPressed(sfKeySpace)) {
-                    if (sfSprite_getPosition(arrow).y == 700) {
-                        sfText_setPosition(life, (sfVector2f) { 300, 700 });
-                        sfText_setColor(life, (sfColor) { 255, 0, 0, 255 });
-                        sfText_setColor(gameOver, (sfColor) { 255, 0, 0, 0 });
-                        for (int i = 0; i < 10; i++) {
-                            bullet[i].dir.x = 0;
-                            bullet[i].dir.y = 0;
-                            bullet[i].pos.x = 500;
-                            bullet[i].pos.y = 500;
-                            bullet[i].vitesse = 1;
-                            bullet[i].visible = 0;
-                            bullet[i].force.x = 0;
-                            bullet[i].force.y = 0;
-                            bullet[i].angle = -90;
-                            sfSprite_setPosition(bullet[i].sprite, (sfVector2f) { bullet[i].pos.x, bullet[i].pos.y });
+                    if (!press) {
+                        if (sfSprite_getPosition(arrow).x == 600 && sfSprite_getPosition(arrow).y == 700) {
+                            for (int i = 0; i < 20; i++) {
+                                tentacle[i].vitesse = 0.05;
+                            }
+                            apparition = 8000;
+                            gameState = 1;
                         }
-                        for (int i = 0; i < 20; i++) {
-                            tentacle[i].dir.x = 0;
-                            tentacle[i].dir.y = 0;
-                            tentacle[i].pos.x = 0;
-                            tentacle[i].pos.y = 0;
-                            tentacle[i].vitesse = 0.1;
-                            tentacle[i].exist = 0;
-                            tentacle[i].angle = -90;
-                            tentacle[i].norme = 0;
-                            sfSprite_setPosition(tentacle[i].sprite, (sfVector2f) { tentacle[i].pos.x, tentacle[i].pos.y });
+                        if (sfSprite_getPosition(arrow).y == 780) {
+                            for (int i = 0; i < 20; i++) {
+                                tentacle[i].vitesse = 0.11;
+                            }
+                            apparition = 3000;
+                            gameState = 1;
                         }
-                        joueur.pos = (sfVector2f){ 500,500 };
-                        joueur.angle = -90;
-                        joueur.angleMax = 120;
-                        joueur.angleMin = 60;
-                        joueur.vitesse = 0.5;
-                        joueur.fwd = (sfVector2f){ 0,0 };
-                        joueur.force = (sfVector2f){ 0,0 };
-                        joueur.life = 3;
-                        sfSprite_setPosition(joueur.sprite, (sfVector2f) { joueur.pos.x, joueur.pos.y });
-                        sfSprite_setPosition(arrow, (sfVector2f) { 400, 700 });
-                        sfSprite_setPosition(test, (sfVector2f) { 0, 0 });
-                        sfSprite_setTexture(test, textureTest, sfTrue);
-                        sfSprite_setPosition(test1, (sfVector2f) { 0, -1000 });
-                        sfSprite_setTexture(test1, textureTest, sfTrue);
-                        sfSprite_setPosition(test2, (sfVector2f) { 0, -2000 });
-                        sfSprite_setTexture(test2, textureTest, sfTrue);
-                        sfSprite_setPosition(spriteL, (sfVector2f) {joueur.pos.x, joueur.pos.y});
-                        press = 0;
-                        apparition = 5000;
-                        lostLife = 0;
-                        delaiTxt = 6000;
-                        gameState = 0;
-                        transition = 0;
-                        gameState = 1;
-                    }
-                    else {
-                        sfRenderWindow_close(window);
-                        break;
-                    }
+                        if (sfSprite_getPosition(arrow).y == 740) {
+                            gameState = 1;
+                        }
+                        if (sfSprite_getPosition(arrow).y == 700 && sfSprite_getPosition(arrow).x == 400) {
+                            sfSprite_setPosition(arrow, (sfVector2f) { 600, 700 });
+                        }
+                        if (sfSprite_getPosition(arrow).y == 800) {
+                            sfRenderWindow_close(window);
+                            break;
+                        }
+                    }  
+                    press = 1;
+                }
+                if (!sfKeyboard_isKeyPressed(sfKeyUp) && !sfKeyboard_isKeyPressed(sfKeyDown) && !sfKeyboard_isKeyPressed(sfKeySpace)) {
+                    press = 0;
                 }
                 sfRenderWindow_drawText(window, launch, NULL);
                 sfRenderWindow_drawText(window, quit, NULL);
+                sfRenderWindow_drawText(window, diff, NULL);
                 sfRenderWindow_drawSprite(window, arrow, NULL);
             }
 
@@ -861,7 +966,11 @@ int main() {
     sfSprite_destroy(test);
     sfSprite_destroy(test1);
     sfSprite_destroy(test2);
+    sfSprite_destroy(arbre);
+    sfSprite_destroy(arbre1);
+    sfSprite_destroy(arbre2);
     sfTexture_destroy(textureTest);
+    sfTexture_destroy(textureArbre);
     for (int i = 0; i < 9; i++) {
         sfText_destroy(title[i].text);
     }
