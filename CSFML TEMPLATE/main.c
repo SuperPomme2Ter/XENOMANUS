@@ -1,4 +1,4 @@
-#include <SFML/Graphics.h>
+﻿#include <SFML/Graphics.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -93,7 +93,7 @@ void gestionJoueur(struct j* joueur, float delta) {
         joueur->angleMin = 0;
     }
 
-
+    
 }
 
 void gestionBullet(struct obj *bullet,struct j joueur,int option) {
@@ -199,14 +199,19 @@ int main() {
     sfSprite* spriteL;
     sfTexture* textureTest;
     sfSprite* test;
+    sfSprite* test1;
+    sfSprite* test2;
     sfClock* deltaclock = sfClock_create();
     sfClock* Event = sfClock_create();
     sfClock* eventLostLife = sfClock_create();
     sfTexture* textureF;
     sfSprite* spriteF;
- //   sfText* launch;
- //   sfText* quit;
+    sfTexture* textureArrow;
+    sfSprite* arrow;
+    sfText* launch;
+    sfText* quit;
     sfText* life;
+    sfText* gameOver;
     sfFont* font; 
     sfFont* oscour;
 
@@ -216,17 +221,40 @@ int main() {
         "As you fall, you passed away,\nSoon to be catch by the creature."
 
     };
-    oscour = sfFont_createFromFile("wingding.ttf");
+    oscour = sfFont_createFromFile("Wingding Review.ttf");
     font = sfFont_createFromFile("arial.ttf");
     life = sfText_create();
 
     sfText_setFont(life, font);
-    sfText_setOrigin(life, (sfVector2f) { 0, 25 });
+    sfText_setOrigin(life, (sfVector2f) { 0, 20 });
     sfText_setCharacterSize(life, 40);
     sfText_setPosition(life, (sfVector2f) { 300, 700 });
     sfText_setColor(life, (sfColor) { 255, 0, 0, 255 });
 
+    launch = sfText_create();
+    sfText_setFont(launch, font);
+    sfText_setOrigin(launch, (sfVector2f) { 0, 20 });
+    sfText_setCharacterSize(launch, 40);
+    sfText_setPosition(launch, (sfVector2f) { 440, 700 });
+    sfText_setColor(launch, (sfColor) { 255, 0, 0, 255 });
+    sfText_setString(launch, "Run");
+
+    quit = sfText_create();
+    sfText_setFont(quit, font);
+    sfText_setOrigin(quit, (sfVector2f) { 0, 20 });
+    sfText_setCharacterSize(quit, 40);
+    sfText_setPosition(quit, (sfVector2f) { 440, 800 });
+    sfText_setColor(quit, (sfColor) { 255, 0, 0, 255 });
+    sfText_setString(quit, "Quit");
     
+    gameOver = sfText_create();
+    sfText_setFont(gameOver, font);
+    sfText_setOrigin(gameOver, (sfVector2f) { 30, 30 });
+    sfText_setCharacterSize(gameOver, 60);
+    sfText_setString(gameOver,"GAME OVER");
+    sfText_setPosition(gameOver, (sfVector2f) { 330, 300 });
+    sfText_setColor(gameOver, (sfColor) { 255, 0, 0, 0 });
+
     char titleTxt[9][3] = {
         "X",
         "e",
@@ -301,13 +329,26 @@ int main() {
     sfSprite_setPosition(joueur.sprite, (sfVector2f) { joueur.pos.x, joueur.pos.y });
     sfSprite_setTexture(joueur.sprite, joueur.texture, sfTrue);
 
+    arrow = sfSprite_create();
+    textureArrow = sfTexture_createFromFile("coche.png", NULL);
+    sfSprite_setOrigin(arrow, (sfVector2f) { 20, 20 });
+    sfSprite_setPosition(arrow, (sfVector2f) { 400, 700 });
+    sfSprite_setTexture(arrow, textureArrow, sfTrue);
+    sfSprite_setScale(arrow, (sfVector2f) { 0.4, 0.4 });
+
     test = sfSprite_create();
+    test1 = sfSprite_create();
+    test2 = sfSprite_create();
     textureTest = sfTexture_createFromFile("test.png", NULL);
     sfSprite_setPosition(test, (sfVector2f) { 0, 0 });
     sfSprite_setTexture(test, textureTest, sfTrue);
+    sfSprite_setPosition(test1, (sfVector2f) { 0, -1000 });
+    sfSprite_setTexture(test1, textureTest, sfTrue);
+    sfSprite_setPosition(test2, (sfVector2f) { 0, -2000 });
+    sfSprite_setTexture(test2, textureTest, sfTrue);
 
     spriteL = sfSprite_create();
-    textureL = sfTexture_createFromFile("lumi�re.png", NULL);
+    textureL = sfTexture_createFromFile("lumière.png", NULL);
     sfSprite_setPosition(spriteL, (sfVector2f) { joueur.pos.x, joueur.pos.y
     });
     sfSprite_setOrigin(spriteL, (sfVector2f) { 1500, 1500 });
@@ -338,121 +379,257 @@ int main() {
             }
             tmp = timer(Event);
             sfRenderWindow_clear(window, sfBlack);
-            if (tmp % 80 == 0) {
+            if (tmp % 200 == 0) {
                 if (!transition) {
                     rollTitle = rand() % 9;
                     sfText_setFont(title[rollTitle].text, oscour);
                     transition = 1;
-                }else{
+                }
+                else {
                     sfText_setFont(title[rollTitle].text, font);
                     transition = 0;
+                }
+            }
+            if (sfKeyboard_isKeyPressed(sfKeyDown) && sfSprite_getPosition(arrow).y == 700) {
+                sfSprite_setPosition(arrow, (sfVector2f) { 400, 800 });
+            }
+            if (sfKeyboard_isKeyPressed(sfKeyUp) && sfSprite_getPosition(arrow).y == 800) {
+                sfSprite_setPosition(arrow, (sfVector2f) { 400, 700 });
+            }
+            if (sfKeyboard_isKeyPressed(sfKeySpace)) {
+                if (sfSprite_getPosition(arrow).y == 700) {
+                    gameState = 1;
+                }
+                else {
+                    sfRenderWindow_close(window);
                 }
             }
             for (int i = 0; i < 9; i++) {
                 sfRenderWindow_drawText(window, title[i].text, NULL);
             }
+            sfRenderWindow_drawText(window, launch, NULL);
+            sfRenderWindow_drawText(window, quit, NULL);
+            sfRenderWindow_drawSprite(window, arrow,NULL);
             sfRenderWindow_display(window);
         }
-        if (sfKeyboard_isKeyPressed(sfKeyRight)) {
-            joueur.angle += 3 * delta / 10000;
-            joueur.angleMax += 3 * delta / 10000;
-            joueur.angleMin += 3 * delta / 10000;
+        while (gameState==1) {
+            while (sfRenderWindow_pollEvent(window, &event)) {
+                if (event.type == sfEvtClosed)
+                    sfRenderWindow_close(window);
+            }
 
-        }
-        if (sfKeyboard_isKeyPressed(sfKeyLeft)) {
-            joueur.angle -= 2 * delta / 10000;
-            joueur.angleMax -= 2 * delta / 10000;
-            joueur.angleMin -= 2 * delta / 10000;
-        }
-        if (sfKeyboard_isKeyPressed(sfKeySpace)) {
-            if (!press) {
-                gestionBullet(&bullet, joueur, 0);
-            }
-            press = 1;
-        }
-        else {
-            press = 0;
-        }
-        if (sfKeyboard_isKeyPressed(sfKeyUp)) {
-            joueur.fwd.x = cosf(joueur.angle * PI / 180);
-            joueur.fwd.y = sinf(joueur.angle * PI / 180);
-            if (fabs(joueur.force.x + joueur.vitesse * joueur.fwd.x * delta / 10000) < fabs(150 * joueur.fwd.x * delta / 10000)) {
-                joueur.force.x += joueur.vitesse * joueur.fwd.x * delta / 10000;
-            }
-            if (fabs(joueur.force.y + joueur.vitesse * joueur.fwd.y * delta / 10000) < fabs(150 * joueur.fwd.y * delta / 10000)) {
-                joueur.force.y += joueur.vitesse * joueur.fwd.y * delta / 10000;
-            }
-        }
-        if (joueur.pos.x + joueur.force.x > 1000 || joueur.pos.x + joueur.force.x < 0) {
-            joueur.force.x = 0;
-        }
-        if (joueur.pos.y + joueur.force.y > 1000 || joueur.pos.y + joueur.force.y < 0) {
-            joueur.force.y = 0;
-        }
-        
-        gestionJoueur(&joueur,delta);
+            if (sfKeyboard_isKeyPressed(sfKeyRight)) {
+                joueur.angle += 3 * delta / 10000;
+                joueur.angleMax += 3 * delta / 10000;
+                joueur.angleMin += 3 * delta / 10000;
 
-        gestionBullet(&bullet, joueur, 1);
-
-
-        delai=timer(Event);
-        if (delai >= apparition) {
-            sfClock_restart(Event);
-            delai = 0;
-            gestionEnnemis(tentacle, &joueur, &bullet, 1,&lostLife);
-            if (apparition > 10) {
-                apparition -= 10;
             }
-            
-        }
-        printf("%d\n",joueur.life);
-        gestionEnnemis(&tentacle, &joueur, &bullet,0,&lostLife);
-        
-        sfSprite_setRotation(spriteL, joueur.angle - 90);
-        sfSprite_setRotation(joueur.sprite, joueur.angle - 90);
-
-        Delta(deltaclock);
-        
-        sfRenderWindow_clear(window, sfWhite);
-        sfRenderWindow_drawSprite(window, test, NULL);
-        for (int i = 0; i < 10; i++) {
-            if (bullet[i].visible) {
-                sfRenderWindow_drawSprite(window, bullet[i].sprite, NULL);
+            if (sfKeyboard_isKeyPressed(sfKeyLeft)) {
+                joueur.angle -= 2 * delta / 10000;
+                joueur.angleMax -= 2 * delta / 10000;
+                joueur.angleMin -= 2 * delta / 10000;
             }
-        }
-        for (int i = 0; i < 20; i++) {
-            if (tentacle[i].exist) {
-                sfRenderWindow_drawSprite(window, tentacle[i].sprite, NULL);
-            }
-        }
-        sfRenderWindow_drawSprite(window, spriteL, NULL);
-        if (lostLife || delaiTxt <= 5000) {
-            if (delaiTxt > 5000) {
-                lostLife = 0;
-                sfClock_restart(eventLostLife);
-                sfText_setColor(life, (sfColor) { 255, 0, 0, 255 });
-            }
-            delaiTxt = timer(eventLostLife);
-            if (joueur.life > 0) {
-                sfText_setString(life, txtLife[2 - joueur.life]);// ?
-
+            if (sfKeyboard_isKeyPressed(sfKeySpace)) {
+                if (!press) {
+                    gestionBullet(&bullet, joueur, 0);
+                }
+                press = 1;
             }
             else {
-                sfText_setString(life, txtLife[2]);
+                press = 0;
             }
-            sfText_setColor(life, (sfColor) { 255, delaiTxt / 10, delaiTxt / 10, 255 });
+            if (sfKeyboard_isKeyPressed(sfKeyUp)) {
+                joueur.fwd.x = cosf(joueur.angle * PI / 180);
+                joueur.fwd.y = sinf(joueur.angle * PI / 180);
+                if (fabs(joueur.force.x + joueur.vitesse * joueur.fwd.x * delta / 10000) < fabs(150 * joueur.fwd.x * delta / 10000)) {
+                    joueur.force.x += joueur.vitesse * joueur.fwd.x * delta / 10000;
+                }
+                if (fabs(joueur.force.y + joueur.vitesse * joueur.fwd.y * delta / 10000) < fabs(150 * joueur.fwd.y * delta / 10000)) {
+                    joueur.force.y += joueur.vitesse * joueur.fwd.y * delta / 10000;
+                }
+            }
+            if (joueur.pos.x + joueur.force.x > 1000 || joueur.pos.x + joueur.force.x < 0) {
+                joueur.force.x = 0;
+            }
+            if (joueur.pos.y + joueur.force.y > 1000 || joueur.pos.y + joueur.force.y < 0) {
+                joueur.force.y = 0;
+            }
+
+            gestionJoueur(&joueur, delta);
+
+            gestionBullet(&bullet, joueur, 1);
+
+
+            delai = timer(Event);
+            if (delai >= apparition) {
+                sfClock_restart(Event);
+                delai = 0;
+                gestionEnnemis(tentacle, &joueur, &bullet, 1, &lostLife);
+                if (apparition > 10) {
+                    apparition -= 10;
+                }
+
+            }
+            printf("%d\n", joueur.life);
+            gestionEnnemis(&tentacle, &joueur, &bullet, 0, &lostLife);
+
+            sfSprite_setRotation(spriteL, joueur.angle - 90);
+            sfSprite_setRotation(joueur.sprite, joueur.angle - 90);
+            sfSprite_move(test, (sfVector2f) { 0, delta/1000});
+            sfSprite_move(test1, (sfVector2f) { 0, delta/1000});
+            sfSprite_move(test2, (sfVector2f) { 0, delta/1000});
+            if (sfSprite_getPosition(test2).y >= 0) {
+                sfSprite_setPosition(test, (sfVector2f) { 0, 0 });
+                sfSprite_setPosition(test1, (sfVector2f) { 0, -1000 });
+                sfSprite_setPosition(test2, (sfVector2f) { 0, -2000 });
+            }
+            Delta(deltaclock);
+
+            sfRenderWindow_clear(window, sfWhite);
+            sfRenderWindow_drawSprite(window, test, NULL);
+            sfRenderWindow_drawSprite(window, test1, NULL);
+            sfRenderWindow_drawSprite(window, test2, NULL);
+            for (int i = 0; i < 10; i++) {
+                if (bullet[i].visible) {
+                    sfRenderWindow_drawSprite(window, bullet[i].sprite, NULL);
+                }
+            }
+            for (int i = 0; i < 20; i++) {
+                if (tentacle[i].exist) {
+                    sfRenderWindow_drawSprite(window, tentacle[i].sprite, NULL);
+                }
+            }
+            sfRenderWindow_drawSprite(window, spriteL, NULL);
+            if (lostLife || delaiTxt <= 5000) {
+                if (delaiTxt > 5000) {
+                    lostLife = 0;
+                    sfClock_restart(eventLostLife);
+                    sfText_setColor(life, (sfColor) { 255, 0, 0, 255 });
+                }
+                delaiTxt = timer(eventLostLife);
+                if (joueur.life > 0) {
+                    sfText_setString(life, txtLife[2 - joueur.life]);// ?
+
+
+                }
+                else {
+                    gameState = 2;
+                    sfText_setString(life, txtLife[2]);
+                }
+                sfText_setColor(life, (sfColor) { 255, delaiTxt, delaiTxt, 255 });
+                sfRenderWindow_drawText(window, life, NULL);
+
+            }
+            sfSprite_setPosition(spriteL, (sfVector2f) {
+                joueur.pos.x, joueur.pos.y
+            });
+            sfSprite_setPosition(joueur.sprite, (sfVector2f) {
+                joueur.pos.x, joueur.pos.y
+            });
+            sfRenderWindow_drawSprite(window, joueur.sprite, NULL);
+
+
+
+            sfRenderWindow_display(window);
+        }
+
+        sfRenderWindow_clear(window, sfBlack);
+        sfClock_restart(eventLostLife);
+        delaiTxt = timer(eventLostLife);
+        sfColor gameOverClr;
+        int restart=0;
+        sfText_setPosition(life, (sfVector2f) { 200, 500 });
+        while (gameState == 2) {
+            while (sfRenderWindow_pollEvent(window, &event)) {
+                if (event.type == sfEvtClosed)
+                    sfRenderWindow_close(window);
+            }
+            
+            sfRenderWindow_clear(window, sfBlack);
+            gameOverClr = sfText_getColor(gameOver);
+            if (gameOverClr.a < 255) {
+                sfText_setColor(gameOver, (sfColor) { 255, 0, 0, delaiTxt/100 });
+            }
+            else {
+                restart = 1;
+            }
+            if (restart) {
+                if (sfKeyboard_isKeyPressed(sfKeyDown) && sfSprite_getPosition(arrow).y == 700) {
+                    sfSprite_setPosition(arrow, (sfVector2f) { 400, 800 });
+                }
+                if (sfKeyboard_isKeyPressed(sfKeyUp) && sfSprite_getPosition(arrow).y == 800) {
+                    sfSprite_setPosition(arrow, (sfVector2f) { 400, 700 });
+                }
+                if (sfKeyboard_isKeyPressed(sfKeySpace)) {
+                    if (sfSprite_getPosition(arrow).y == 700) {
+                        sfText_setPosition(life, (sfVector2f) { 300, 700 });
+                        sfText_setColor(life, (sfColor) { 255, 0, 0, 255 });
+                        sfText_setColor(gameOver, (sfColor) { 255, 0, 0, 0 });
+                        for (int i = 0; i < 10; i++) {
+                            bullet[i].dir.x = 0;
+                            bullet[i].dir.y = 0;
+                            bullet[i].pos.x = 500;
+                            bullet[i].pos.y = 500;
+                            bullet[i].vitesse = 1;
+                            bullet[i].visible = 0;
+                            bullet[i].force.x = 0;
+                            bullet[i].force.y = 0;
+                            bullet[i].angle = -90;
+                            sfSprite_setPosition(bullet[i].sprite, (sfVector2f) { bullet[i].pos.x, bullet[i].pos.y });
+                        }
+                        for (int i = 0; i < 20; i++) {
+                            tentacle[i].dir.x = 0;
+                            tentacle[i].dir.y = 0;
+                            tentacle[i].pos.x = 0;
+                            tentacle[i].pos.y = 0;
+                            tentacle[i].vitesse = 0.1;
+                            tentacle[i].exist = 0;
+                            tentacle[i].angle = -90;
+                            tentacle[i].norme = 0;
+                            sfSprite_setPosition(tentacle[i].sprite, (sfVector2f) { tentacle[i].pos.x, tentacle[i].pos.y });
+                        }
+                        joueur.pos = (sfVector2f){ 500,500 };
+                        joueur.angle = -90;
+                        joueur.angleMax = 120;
+                        joueur.angleMin = 60;
+                        joueur.vitesse = 0.5;
+                        joueur.fwd = (sfVector2f){ 0,0 };
+                        joueur.force = (sfVector2f){ 0,0 };
+                        joueur.life = 3;
+                        sfSprite_setPosition(joueur.sprite, (sfVector2f) { joueur.pos.x, joueur.pos.y });
+                        sfSprite_setPosition(arrow, (sfVector2f) { 400, 700 });
+                        sfSprite_setPosition(test, (sfVector2f) { 0, 0 });
+                        sfSprite_setTexture(test, textureTest, sfTrue);
+                        sfSprite_setPosition(test1, (sfVector2f) { 0, -1000 });
+                        sfSprite_setTexture(test1, textureTest, sfTrue);
+                        sfSprite_setPosition(test2, (sfVector2f) { 0, -2000 });
+                        sfSprite_setTexture(test2, textureTest, sfTrue);
+                        sfSprite_setPosition(spriteL, (sfVector2f) {joueur.pos.x, joueur.pos.y});
+                        press = 0;
+                        apparition = 5000;
+                        lostLife = 0;
+                        delaiTxt = 6000;
+                        gameState = 0;
+                        transition = 0;
+                        gameState = 1;
+                    }
+                    else {
+                        sfRenderWindow_close(window);
+                    }
+                }
+                sfRenderWindow_drawText(window, launch, NULL);
+                sfRenderWindow_drawText(window, quit, NULL);
+                sfRenderWindow_drawSprite(window, arrow, NULL);
+            }
+
+            sfRenderWindow_drawText(window, gameOver, NULL);
+            sfText_setColor(life, (sfColor) { 255, delaiTxt, delaiTxt, 255 });
             sfRenderWindow_drawText(window, life, NULL);
 
+            sfRenderWindow_display(window);
+
+            delaiTxt = timer(eventLostLife);
         }
-        sfSprite_setPosition(spriteL, (sfVector2f) { joueur.pos.x, joueur.pos.y
-        });
-        sfSprite_setPosition(joueur.sprite, (sfVector2f) { joueur.pos.x, joueur.pos.y
-        });
-        sfRenderWindow_drawSprite(window, joueur.sprite, NULL);
-
-
-
-        sfRenderWindow_display(window);
     }
 
     for (int i = 0; i < 10; i++) {
@@ -468,11 +645,13 @@ int main() {
     sfSprite_destroy(spriteL);
     sfTexture_destroy(textureL);
     sfSprite_destroy(test);
+    sfSprite_destroy(test1);
+    sfSprite_destroy(test2);
     sfTexture_destroy(textureTest);
     for (int i = 0; i < 9; i++) {
         sfText_destroy(title[i].text);
     }
- //   sfText_destroy(launch);
+    sfText_destroy(launch);
  //   sfText_destroy(quit);
     sfText_destroy(life);
     sfFont_destroy(font);
