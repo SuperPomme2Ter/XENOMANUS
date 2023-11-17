@@ -20,6 +20,7 @@ struct j {
     float angleMax;
     float angleMin;
     int life;
+    int score;
     sfVector2f fwdMax;
     sfVector2f fwdMin;
 };
@@ -43,6 +44,17 @@ struct ennemis {
     float vitesse;
     float angle;
     float norme;
+};
+struct big_thing {
+    sfSprite* sprite;
+    sfTexture* texture;
+    sfVector2f dir;
+    sfVector2f pos;
+    int ugly;
+    float vitesse;
+    float angle;
+    float norme;
+    int hp;
 };
 struct lettre {
     sfText* text;
@@ -129,9 +141,11 @@ void gestionBullet(struct obj *bullet,struct j joueur,int option) {
     }
 }
 
-int gestionEnnemis(struct ennemis *tentacle, struct j *joueur, struct obj* bullet, int option,int *lostLife)
+int gestionEnnemis(struct ennemis *tentacle, struct j *joueur, struct obj* bullet, int option,int *lostLife, sfText* affScore,struct big_thing boss)
 {
     float ecart;
+    char score[20];
+    int nbNewEnnemis=0;
     for (int i = 0; i < 20; i++) {
         if (!option) {
             if (tentacle[i].exist) {
@@ -146,7 +160,7 @@ int gestionEnnemis(struct ennemis *tentacle, struct j *joueur, struct obj* bulle
                 }
                 sfSprite_setPosition(tentacle[i].sprite, (sfVector2f) { tentacle[i].pos.x, tentacle[i].pos.y });
                 ecart = normalize(tentacle[i].pos.x - joueur->pos.x, tentacle[i].pos.y - joueur->pos.y);
-                if (ecart < 50) {
+                if (ecart < 100) {
                     tentacle[i].exist = 0;
                     joueur->life -= 1;
                     *lostLife = 1;
@@ -157,12 +171,15 @@ int gestionEnnemis(struct ennemis *tentacle, struct j *joueur, struct obj* bulle
                         if (ecart < 50) {
                             tentacle[i].exist = 0;
                             bullet[j].visible = 0;
+                            joueur->score += 1;
+                            snprintf(score,20,"Score : %d", joueur->score);
+                            sfText_setString(affScore, score);
                         }
                     }
                 }
             }
         }
-        else {
+        if (option==1) {
             
             if (!tentacle[i].exist) {
                 float x = rand() % 1600 - 300;
@@ -171,13 +188,18 @@ int gestionEnnemis(struct ennemis *tentacle, struct j *joueur, struct obj* bulle
                 float deltaY = joueur->pos.y - y;
                 float angle = atan2f(deltaY, deltaX);
                 angle = fabs(angle * (180.0f / PI));
-                if ((angle < fabs(joueur->angleMax) && angle > fabs(joueur->angleMin)) || fabs(deltaX) < 300 || fabs(deltaY) < 300) {
-                    x = rand() % 1600 - 300;
-                    y = rand() % 1600 - 300;
-                    deltaX = joueur->pos.x - x;
-                    deltaY = joueur->pos.y - y;
-                    angle = atan2f(deltaY, deltaX);
-                    angle = fabs(angle * (180.0f / PI));
+                for (int j = 0; j < 200; j++) {
+                    if ((angle < fabs(joueur->angleMax) && angle > fabs(joueur->angleMin)) || fabs(deltaX) < 300 || fabs(deltaY) < 300) {
+                        x = rand() % 1600 - 300;
+                        y = rand() % 1600 - 300;
+                        deltaX = joueur->pos.x - x;
+                        deltaY = joueur->pos.y - y;
+                        angle = atan2f(deltaY, deltaX);
+                        angle = fabs(angle * (180.0f / PI));
+                    }
+                    else {
+                        break;
+                    }
                 }
                 angleTest = angle;
                 tentacle[i].pos.x = x;
@@ -186,6 +208,97 @@ int gestionEnnemis(struct ennemis *tentacle, struct j *joueur, struct obj* bulle
                 break;
             }
         }
+        if (option == 2) {
+            if (nbNewEnnemis<5){
+                if (!tentacle[i].exist) {
+                    float x =(rand() % 600 )+ (int)boss.pos.x - 300;
+                    float y =(rand() % 600 )+ (int)boss.pos.y - 300;
+                    float deltaX = joueur->pos.x - x;
+                    float deltaY = joueur->pos.y - y;
+                    float angle = atan2f(deltaY, deltaX);
+                    angle = fabs(angle * (180.0f / PI));
+                    for (int k = 0; k < 200; k++ ) {
+                        if ((angle < fabs(joueur->angleMax) && angle > fabs(joueur->angleMin)) || fabs(deltaX) < 300 || fabs(deltaY) < 300) {
+                            x = rand() % 1600 - 300;
+                            y = rand() % 1600 - 300;
+                            deltaX = joueur->pos.x - x;
+                            deltaY = joueur->pos.y - y;
+                            angle = atan2f(deltaY, deltaX);
+                            angle = fabs(angle * (180.0f / PI));
+                        }
+                    }
+                    angleTest = angle;
+                    tentacle[i].pos.x = x;
+                    tentacle[i].pos.y = y;
+                    tentacle[i].exist = 1;
+                    nbNewEnnemis += 1;
+                }
+            }
+            else {
+                break;
+            }
+
+        }
+    }
+}
+
+int gestionBoss(struct big_thing *boss, struct j* joueur, struct obj* bullet, int option, int* lostLife, sfText* affScore)
+{
+    float ecart;
+    char score[20];
+    if (!option) {
+        boss->dir.x = joueur->pos.x - boss->pos.x;
+        boss->dir.y = joueur->pos.y - boss->pos.y;
+        boss->norme = sqrt(boss->dir.x * boss->dir.x + boss->dir.y * boss->dir.y);
+        if (boss->norme > 0) {
+            boss->dir.x /= boss->norme;
+            boss->dir.y /= boss->norme;
+            boss->pos.x += boss->dir.x * boss->vitesse;
+            boss->pos.y += boss->dir.y * boss->vitesse;
+        }
+        sfSprite_setPosition(boss->sprite, (sfVector2f) { boss->pos.x, boss->pos.y });
+        ecart = normalize(boss->pos.x - joueur->pos.x, boss->pos.y - joueur->pos.y);
+        if (ecart < 150) {
+            boss->ugly = 0;
+            joueur->life = 0;
+            *lostLife = 1;
+        }
+        for (int j = 0; j < 10; j++) {
+            if (bullet[j].visible) {
+                ecart = normalize(boss->pos.x - bullet[j].pos.x, boss->pos.y - bullet[j].pos.y);
+                if (ecart < 150) {
+                    boss->hp -= 1;
+                    bullet[j].visible = 0;
+                }
+            }
+        }
+        
+        
+    }
+    else {
+        float x = rand() % 1600 -400;
+        float y = rand() % 1600 -400;
+        float deltaX = joueur->pos.x - x;
+        float deltaY = joueur->pos.y - y;
+        float angle = atan2f(deltaY, deltaX);
+        angle = fabs(angle * (180.0f / PI));
+        for (int i = 0; i < 200; i++) {
+            if ((angle < fabs(joueur->angleMax) && angle > fabs(joueur->angleMin)) || fabs(deltaX) < 400 || fabs(deltaY) < 400) {
+                x = rand() % 1600 - 400;
+                y = rand() % 1600 - 400;
+                deltaX = joueur->pos.x - x;
+                deltaY = joueur->pos.y - y;
+                angle = atan2f(deltaY, deltaX);
+                angle = fabs(angle * (180.0f / PI));
+            }
+            else {
+                break;
+            }
+        }
+        boss->pos.x = x;
+        boss->pos.y = y;
+        boss->ugly = 1;
+        boss->hp = 30;
     }
 }
 
@@ -212,6 +325,8 @@ int main() {
     sfText* quit;
     sfText* life;
     sfText* gameOver;
+    sfText* affScore;
+    sfText* diff;
     sfFont* font; 
     sfFont* oscour;
 
@@ -239,6 +354,14 @@ int main() {
     sfText_setColor(launch, (sfColor) { 255, 0, 0, 255 });
     sfText_setString(launch, "Run");
 
+    diff = sfText_create();
+    sfText_setFont(diff, font);
+    sfText_setOrigin(diff, (sfVector2f) { 0, 20 });
+    sfText_setCharacterSize(diff, 40);
+    sfText_setPosition(diff, (sfVector2f) { 640, 700 });
+    sfText_setColor(diff, (sfColor) { 255, 0, 0, 255 });
+    sfText_setString(diff, "I'm too weak !\nI'm in danger.\nPanik !");
+
     quit = sfText_create();
     sfText_setFont(quit, font);
     sfText_setOrigin(quit, (sfVector2f) { 0, 20 });
@@ -246,6 +369,15 @@ int main() {
     sfText_setPosition(quit, (sfVector2f) { 440, 800 });
     sfText_setColor(quit, (sfColor) { 255, 0, 0, 255 });
     sfText_setString(quit, "Quit");
+
+    affScore = sfText_create();
+
+    sfText_setFont(affScore, font);
+    sfText_setOrigin(affScore, (sfVector2f) { 0, 20 });
+    sfText_setCharacterSize(affScore, 40);
+    sfText_setPosition(affScore, (sfVector2f) { 40, 50 });
+    sfText_setColor(affScore, (sfColor) { 255, 255, 255, 255 });
+
     
     gameOver = sfText_create();
     sfText_setFont(gameOver, font);
@@ -313,6 +445,21 @@ int main() {
         sfSprite_setPosition(tentacle[i].sprite, (sfVector2f) { tentacle[i].pos.x, tentacle[i].pos.y });
         sfSprite_setTexture(tentacle[i].sprite, tentacle[i].texture, sfTrue);
     }
+    struct big_thing boss;
+    boss.sprite = sfSprite_create();
+    sfSprite_setOrigin(boss.sprite, (sfVector2f) { 100, 100 });
+    boss.texture = sfTexture_createFromFile("gars_pas_content.png", NULL);//200 sur 200 pixels
+    boss.dir.x = 0;
+    boss.dir.y = 0;
+    boss.pos.x = 0;
+    boss.pos.y = 0;
+    boss.vitesse = 0.05;
+    boss.ugly = 0;
+    boss.angle = -90;
+    boss.norme = 0;
+    boss.hp = 30;
+    sfSprite_setPosition(boss.sprite, (sfVector2f) { boss.pos.x, boss.pos.y });
+    sfSprite_setTexture(boss.sprite, boss.texture, sfTrue);
 
     struct j joueur;
     joueur.sprite = sfSprite_create();
@@ -326,6 +473,7 @@ int main() {
     joueur.fwd = (sfVector2f){ 0,0 };
     joueur.force = (sfVector2f){ 0,0 };
     joueur.life = 3;
+    joueur.score = 0;
     sfSprite_setPosition(joueur.sprite, (sfVector2f) { joueur.pos.x, joueur.pos.y });
     sfSprite_setTexture(joueur.sprite, joueur.texture, sfTrue);
 
@@ -390,25 +538,73 @@ int main() {
                     transition = 0;
                 }
             }
-            if (sfKeyboard_isKeyPressed(sfKeyDown) && sfSprite_getPosition(arrow).y == 700) {
-                sfSprite_setPosition(arrow, (sfVector2f) { 400, 800 });
+            if (sfKeyboard_isKeyPressed(sfKeyDown)) {
+                if (!press) {
+                    if (sfSprite_getPosition(arrow).y == 740) {
+                        sfSprite_setPosition(arrow, (sfVector2f) { 600, 780 });
+                    }
+                    if (sfSprite_getPosition(arrow).y == 700 && sfSprite_getPosition(arrow).x == 400) {
+                        sfSprite_setPosition(arrow, (sfVector2f) { 400, 800 });
+                    }
+                    if (sfSprite_getPosition(arrow).y == 700 && sfSprite_getPosition(arrow).x == 600) {
+                        sfSprite_setPosition(arrow, (sfVector2f) { 600, 740 });
+                    }   
+                }
+                press = 1;
             }
-            if (sfKeyboard_isKeyPressed(sfKeyUp) && sfSprite_getPosition(arrow).y == 800) {
-                sfSprite_setPosition(arrow, (sfVector2f) { 400, 700 });
+            if (sfKeyboard_isKeyPressed(sfKeyUp)) {
+                if (!press) {
+                    if (sfSprite_getPosition(arrow).y == 800) {
+                        sfSprite_setPosition(arrow, (sfVector2f) { 400, 700 });
+                    }
+                    if (sfSprite_getPosition(arrow).y == 740) {
+                        sfSprite_setPosition(arrow, (sfVector2f) { 600, 700 });
+                    }
+                    if (sfSprite_getPosition(arrow).y == 780) {
+                        sfSprite_setPosition(arrow, (sfVector2f) { 600, 740 });
+                    }
+                }
+                press = 1;
             }
+            
             if (sfKeyboard_isKeyPressed(sfKeySpace)) {
-                if (sfSprite_getPosition(arrow).y == 700) {
-                    gameState = 1;
+                if (!press) {
+                      if (sfSprite_getPosition(arrow).x == 600 && sfSprite_getPosition(arrow).y == 700) {
+                        for (int i = 0; i < 20; i++) {
+                            tentacle[i].vitesse = 0.05;
+                        }
+                        apparition = 8000;
+                        gameState = 1;
+                    }
+                    if (sfSprite_getPosition(arrow).y == 780) {
+                        for (int i = 0; i < 20; i++) {
+                            tentacle[i].vitesse = 0.11;
+                        }
+                        apparition = 3000;
+                        gameState = 1;
+                    }
+                    if (sfSprite_getPosition(arrow).y == 740) {
+                        gameState = 1;
+                    }
+                    if (sfSprite_getPosition(arrow).y == 700 && sfSprite_getPosition(arrow).x == 400) {
+                        sfSprite_setPosition(arrow, (sfVector2f) { 600, 700 });
+                    }
+                    if (sfSprite_getPosition(arrow).y == 800) {
+                        sfRenderWindow_close(window);
+                        break;
+                    }                   
                 }
-                else {
-                    sfRenderWindow_close(window);
-                }
+                press = 1;
+            }
+            if (!sfKeyboard_isKeyPressed(sfKeyUp) && !sfKeyboard_isKeyPressed(sfKeyDown) && !sfKeyboard_isKeyPressed(sfKeySpace)) {
+                press = 0;
             }
             for (int i = 0; i < 9; i++) {
                 sfRenderWindow_drawText(window, title[i].text, NULL);
             }
             sfRenderWindow_drawText(window, launch, NULL);
             sfRenderWindow_drawText(window, quit, NULL);
+            sfRenderWindow_drawText(window, diff, NULL);
             sfRenderWindow_drawSprite(window, arrow,NULL);
             sfRenderWindow_display(window);
         }
@@ -464,14 +660,24 @@ int main() {
             if (delai >= apparition) {
                 sfClock_restart(Event);
                 delai = 0;
-                gestionEnnemis(tentacle, &joueur, &bullet, 1, &lostLife);
+                gestionEnnemis(tentacle, &joueur, &bullet, 1, &lostLife,affScore,boss);
                 if (apparition > 10) {
                     apparition -= 10;
                 }
 
             }
-            printf("%d\n", joueur.life);
-            gestionEnnemis(&tentacle, &joueur, &bullet, 0, &lostLife);
+            if (joueur.score!=0 && joueur.score % 5 == 0 && !boss.ugly) {
+                gestionBoss(&boss, &joueur, &bullet, 1, &lostLife, affScore);
+            }
+            if (boss.ugly) {
+                gestionBoss(&boss, &joueur, &bullet, 0, &lostLife, affScore);
+                if (boss.hp <= 0) {
+                    gestionEnnemis(tentacle, &joueur, &bullet, 2, &lostLife, affScore,boss);
+                    boss.ugly = 0;
+                }
+            }
+            printf("%d x : %f, y : %f\n", boss.ugly,boss.pos.x, boss.pos.y);
+            gestionEnnemis(&tentacle, &joueur, &bullet, 0, &lostLife,affScore,boss);
 
             sfSprite_setRotation(spriteL, joueur.angle - 90);
             sfSprite_setRotation(joueur.sprite, joueur.angle - 90);
@@ -498,6 +704,9 @@ int main() {
                 if (tentacle[i].exist) {
                     sfRenderWindow_drawSprite(window, tentacle[i].sprite, NULL);
                 }
+            }
+            if (boss.ugly) {
+                sfRenderWindow_drawSprite(window, boss.sprite, NULL);
             }
             sfRenderWindow_drawSprite(window, spriteL, NULL);
             if (lostLife || delaiTxt <= 5000) {
@@ -527,6 +736,7 @@ int main() {
                 joueur.pos.x, joueur.pos.y
             });
             sfRenderWindow_drawSprite(window, joueur.sprite, NULL);
+            sfRenderWindow_drawText(window, affScore, NULL);
 
 
 
@@ -539,6 +749,7 @@ int main() {
         sfColor gameOverClr;
         int restart=0;
         sfText_setPosition(life, (sfVector2f) { 200, 500 });
+        sfSprite_setPosition(arrow, (sfVector2f) { 400, 700 });
         while (gameState == 2) {
             while (sfRenderWindow_pollEvent(window, &event)) {
                 if (event.type == sfEvtClosed)
@@ -548,7 +759,7 @@ int main() {
             sfRenderWindow_clear(window, sfBlack);
             gameOverClr = sfText_getColor(gameOver);
             if (gameOverClr.a < 255) {
-                sfText_setColor(gameOver, (sfColor) { 255, 0, 0, delaiTxt/100 });
+                sfText_setColor(gameOver, (sfColor) { 255, 0, 0, delaiTxt/10 });
             }
             else {
                 restart = 1;
@@ -615,6 +826,7 @@ int main() {
                     }
                     else {
                         sfRenderWindow_close(window);
+                        break;
                     }
                 }
                 sfRenderWindow_drawText(window, launch, NULL);
@@ -640,6 +852,8 @@ int main() {
         sfSprite_destroy(tentacle[i].sprite);
         sfTexture_destroy(tentacle[i].texture);
     }
+    sfSprite_destroy(boss.sprite);
+    sfSprite_destroy(boss.texture);
     sfSprite_destroy(joueur.sprite);
     sfTexture_destroy(joueur.texture);
     sfSprite_destroy(spriteL);
@@ -652,8 +866,10 @@ int main() {
         sfText_destroy(title[i].text);
     }
     sfText_destroy(launch);
- //   sfText_destroy(quit);
+    sfText_destroy(quit);
     sfText_destroy(life);
+    sfText_destroy(diff);
+    sfText_destroy(affScore);
     sfFont_destroy(font);
     sfClock_destroy(deltaclock);
     sfClock_destroy(Event);
