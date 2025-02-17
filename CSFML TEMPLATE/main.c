@@ -913,14 +913,15 @@ int main() {
         sfText_setPosition(life, (sfVector2f) { 150, 350 });
         sfText_setColor(life, (sfColor) { 255, 0, 0, 255 });
         sfText_setColor(gameOver, (sfColor) { 255, 0, 0, 0 });
-        sfText_setString(affScore, joueur.score);
+        sfText_setString(affScore, 0);
         press = 0;
         apparition = 3000;
         lostLife = 0;
         delaiTxt = 6000;
         transition = 0;
-        sfText_setPosition(life, (sfVector2f) { 100, 250 });
         sfSprite_setPosition(arrow, (sfVector2f) { 200, 350 });
+        sfText_setPosition(life, (sfVector2f) { 100, 250 });
+
 
         while (gameState == 2) {
             while (sfRenderWindow_pollEvent(window, &event)) {

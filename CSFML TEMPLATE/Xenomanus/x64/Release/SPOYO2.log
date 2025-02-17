@@ -56,17 +56,12 @@ C:\Users\Durand\Desktop\Dev\Quetes\B1\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE
 C:\Users\Durand\Desktop\Dev\Quetes\B1\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(830,28): warning C4024: 'gestionEnnemis' : types différents pour le paramètre formel et réel 1
 C:\Users\Durand\Desktop\Dev\Quetes\B1\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(830,48): warning C4047: 'fonction' : les niveaux d'indirection de 'obj *' et de 'obj (*)[10]' sont différents
 C:\Users\Durand\Desktop\Dev\Quetes\B1\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(830,48): warning C4024: 'gestionEnnemis' : types différents pour le paramètre formel et réel 3
-C:\Users\Durand\Desktop\Dev\Quetes\B1\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(916,42): warning C4047: 'fonction' : les niveaux d'indirection de 'const char *' et de 'int' sont différents
-C:\Users\Durand\Desktop\Dev\Quetes\B1\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(916,42): warning C4024: 'sfText_setString' : types différents pour le paramètre formel et réel 2
-C:\Users\Durand\Desktop\Dev\Quetes\B1\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(1051,30): warning C4133: 'fonction' : types incompatibles - de 'sfTexture *' à 'sfSprite *'
+C:\Users\Durand\Desktop\Dev\Quetes\B1\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(1052,30): warning C4133: 'fonction' : types incompatibles - de 'sfTexture *' à 'sfSprite *'
 C:\Users\Durand\Desktop\Dev\Quetes\B1\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(415,15): warning C4101: 'spriteF' : variable locale non référencée
 C:\Users\Durand\Desktop\Dev\Quetes\B1\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(414,16): warning C4101: 'textureF' : variable locale non référencée
   Génération de code en cours
-  Previous IPDB not found, fall back to full compilation.
-C:\Users\Durand\Desktop\Dev\Quetes\B1\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(171): warning C4716: 'ResetBullet' : doit retourner une valeur
-C:\Users\Durand\Desktop\Dev\Quetes\B1\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(390): warning C4716: 'ResetStats' : doit retourner une valeur
-C:\Users\Durand\Desktop\Dev\Quetes\B1\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(341): warning C4716: 'gestionBoss' : doit retourner une valeur
-C:\Users\Durand\Desktop\Dev\Quetes\B1\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(280): warning C4716: 'gestionEnnemis' : doit retourner une valeur
-  All 14 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  1 of 14 functions ( 7.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
   Fin de la génération du code
   SPOYO2.vcxproj -> C:\Users\Durand\Desktop\Dev\Quetes\B1\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\x64\Release\Xenomanus.exe
