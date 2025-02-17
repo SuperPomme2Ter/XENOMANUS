@@ -133,12 +133,15 @@ void gestionBullet(struct obj *bullet,struct j joueur,int option) {
                 bullet[i].pos.x += bullet[i].force.x * delta / 10000;
                 bullet[i].pos.y += bullet[i].force.y * delta / 10000;
                 sfSprite_setPosition(bullet[i].sprite, (sfVector2f) { bullet[i].pos.x, bullet[i].pos.y });
-                if (bullet[i].pos.x < 0 || bullet[i].pos.x>500 || bullet[i].pos.y < 0 || bullet[i].pos.y>500) {
-                    bullet[i].pos.x = joueur.pos.x;
+                if (bullet[i].pos.x < -20 || bullet[i].pos.x>520 || bullet[i].pos.y < -20 || bullet[i].pos.y>520) {
+                    /*bullet[i].pos.x = joueur.pos.x;
                     bullet[i].pos.y = joueur.pos.y;
                     bullet[i].force.x = 0;
                     bullet[i].force.y = 0;
-                    bullet[i].visible = 0;
+                    bullet[i].dir.x = 0;
+                    bullet[i].dir.y = 0;
+                    bullet[i].visible = 0;*/
+                    ResetBullet(&bullet[i], joueur);
                 }
             }
         }
@@ -155,6 +158,16 @@ void gestionBullet(struct obj *bullet,struct j joueur,int option) {
             }
         }
     }
+}
+
+int ResetBullet(struct obj* bullet, struct j joueur) {
+    bullet->pos.x = joueur.pos.x;
+    bullet->pos.y = joueur.pos.y;
+    bullet->force.x = 0;
+    bullet->force.y = 0;
+    bullet->dir.x = 0;
+    bullet->dir.y = 0;
+    bullet->visible = 0;
 }
 
 //manage the creation, destruction, movement and collision of the tentacles
@@ -182,7 +195,7 @@ int gestionEnnemis(struct ennemis *tentacle, struct j *joueur, struct obj* bulle
                 sfSprite_setPosition(tentacle[i].sprite, (sfVector2f) { tentacle[i].pos.x, tentacle[i].pos.y });
                 sfSprite_setRotation(tentacle[i].sprite, angle+90);
                 ecart = normalize(tentacle[i].pos.x - joueur->pos.x, tentacle[i].pos.y - joueur->pos.y);
-                if (ecart < 50) {
+                if (ecart < 5) {
                     tentacle[i].exist = 0;
                     joueur->life -= 1;
                     *lostLife = 1;
@@ -192,7 +205,7 @@ int gestionEnnemis(struct ennemis *tentacle, struct j *joueur, struct obj* bulle
                         ecart = normalize(tentacle[i].pos.x - bullet[j].pos.x, tentacle[i].pos.y - bullet[j].pos.y);
                         if (ecart < 25) {
                             tentacle[i].exist = 0;
-                            bullet[j].visible = 0;
+                            ResetBullet(&bullet[j], *joueur);
                             joueur->score += 1;
                             snprintf(score,20,"Score : %d", joueur->score);
                             sfText_setString(affScore, score);
@@ -204,16 +217,16 @@ int gestionEnnemis(struct ennemis *tentacle, struct j *joueur, struct obj* bulle
         if (option==1) {
             
             if (!tentacle[i].exist) {
-                float x = rand() % 1600 - 300;
-                float y = rand() % 1600 - 300;
+                float x = rand() % 800 - 200;
+                float y = rand() % 800 - 200;
                 float deltaX = joueur->pos.x - x;
                 float deltaY = joueur->pos.y - y;
                 float angle = atan2f(deltaY, deltaX);
                 angle = fabs(angle * (180.0f / PI));
                 for (int j = 0; j < 200; j++) {
-                    if ((angle < fabs(joueur->angleMax) && angle > fabs(joueur->angleMin)) || fabs(deltaX) < 300 || fabs(deltaY) < 300) {
-                        x = rand() % 800 - 150;
-                        y = rand() % 800 - 150;
+                    if ((angle < fabs(joueur->angleMax) && angle > fabs(joueur->angleMin)) || fabs(deltaX) < 200 || fabs(deltaY) < 200) {
+                        x = rand() % 800 - 200;
+                        y = rand() % 800 - 200;
                         deltaX = joueur->pos.x - x;
                         deltaY = joueur->pos.y - y;
                         angle = atan2f(deltaY, deltaX);
@@ -232,20 +245,20 @@ int gestionEnnemis(struct ennemis *tentacle, struct j *joueur, struct obj* bulle
         //used when the boss dies, spawn 5 tentacles
         if (option == 2) {
             for (int i = 0; i < 10; i++) {
-                bullet[i].visible = 0;
+                ResetBullet(&bullet[i], *joueur);
             }
             if (nbNewEnnemis<5){
                 if (!tentacle[i].exist) {
-                    float x =(rand() % 50 )+ (int)boss.pos.x - 100;
-                    float y =(rand() % 50 )+ (int)boss.pos.y - 100;
+                    float x =(rand() % 25 )+ (int)boss.pos.x - 50;
+                    float y =(rand() % 25 )+ (int)boss.pos.y - 50;
                     float deltaX = joueur->pos.x - x;
                     float deltaY = joueur->pos.y - y;
                     float angle = atan2f(deltaY, deltaX);
                     angle = fabs(angle * (180.0f / PI));
                     for (int k = 0; k < 200; k++ ) {
-                        if ((angle < fabs(joueur->angleMax) && angle > fabs(joueur->angleMin)) || fabs(deltaX) < 300 || fabs(deltaY) < 300) {
-                            x = (rand() % 50) + (int)boss.pos.x - 100;
-                            y = (rand() % 50) + (int)boss.pos.y - 100;
+                        if ((angle < fabs(joueur->angleMax) && angle > fabs(joueur->angleMin)) || fabs(deltaX) < 350 || fabs(deltaY) < 350) {
+                            x = (rand() % 25) + (int)boss.pos.x - 50;
+                            y = (rand() % 25) + (int)boss.pos.y - 50;
                             deltaX = joueur->pos.x - x;
                             deltaY = joueur->pos.y - y;
                             angle = atan2f(deltaY, deltaX);
@@ -283,7 +296,7 @@ int gestionBoss(struct big_thing *boss, struct j* joueur, struct obj *bullet, in
         }
         sfSprite_setPosition(boss->sprite, (sfVector2f) { boss->pos.x, boss->pos.y });
         ecart = normalize(boss->pos.x - joueur->pos.x, boss->pos.y - joueur->pos.y);
-        if (ecart < 75) {
+        if (ecart < 60) {
             boss->ugly = 0;
             joueur->life = 0;
             *lostLife = 1;
@@ -308,7 +321,7 @@ int gestionBoss(struct big_thing *boss, struct j* joueur, struct obj *bullet, in
         float angle = atan2f(deltaY, deltaX);
         angle = fabs(angle * (180.0f / PI));
         for (int i = 0; i < 200; i++) {
-            if ((angle < fabs(joueur->angleMax) && angle > fabs(joueur->angleMin)) || fabs(deltaX) < 400 || fabs(deltaY) < 400) {
+            if ((angle < fabs(joueur->angleMax) && angle > fabs(joueur->angleMin)) || fabs(deltaX) < 350 || fabs(deltaY) < 350) {
                 x = rand() % 800 - 200;
                 y = rand() % 800 - 200;
                 deltaX = joueur->pos.x - x;
@@ -326,6 +339,59 @@ int gestionBoss(struct big_thing *boss, struct j* joueur, struct obj *bullet, in
         boss->hp = 20;
     }
 }
+
+int ResetStats(struct ennemis* tentacle, struct big_thing* boss, struct obj* bullet, struct j* joueur) {
+    for (int i = 0; i < 10; i++) {
+        bullet[i].dir.x = 0;
+        bullet[i].dir.y = 0;
+        bullet[i].pos.x = 250;
+        bullet[i].pos.y = 250;
+        bullet[i].vitesse = 0.5;
+        bullet[i].visible = 0;
+        bullet[i].force.x = 0;
+        bullet[i].force.y = 0;
+        bullet[i].angle = -90;
+        sfSprite_setPosition(bullet[i].sprite, (sfVector2f) { bullet[i].pos.x, bullet[i].pos.y });
+    }
+    for (int i = 0; i < 20; i++) {
+        tentacle[i].dir.x = 0;
+        tentacle[i].dir.y = 0;
+        tentacle[i].pos.x = 0;
+        tentacle[i].pos.y = 0;
+        tentacle[i].vitesse = 0.0075f;
+        tentacle[i].exist = 0;
+        tentacle[i].angle = -90;
+        tentacle[i].norme = 0;
+        sfSprite_setPosition(tentacle[i].sprite, (sfVector2f) { tentacle[i].pos.x, tentacle[i].pos.y });
+    }
+    joueur->pos = (sfVector2f){ 250,250 };
+    joueur->angle = -90;
+    //since we are in degrees, these are the corrects value for the angle
+    joueur->angleMax = 120;
+    joueur->angleMin = 60;
+    joueur->vitesse = 0.25;
+    joueur->vitesseMax = 1;
+    joueur->fwd = (sfVector2f){ 0,0 };
+    joueur->force = (sfVector2f){ 0,0 };
+    joueur->life = 3;
+    joueur->score = 0;
+    sfSprite_setPosition(joueur->sprite, (sfVector2f) { joueur->pos.x, joueur->pos.y });
+
+    boss->dir.x = 0;
+    boss->dir.y = 0;
+    boss->pos.x = 0;
+    boss->pos.y = 0;
+    boss->vitesse = 0.008f;
+    boss->ugly = 0;
+    boss->angle = -90;
+    boss->norme = 0;
+    boss->hp = 20;
+    sfSprite_setPosition(boss->sprite, (sfVector2f) { boss->pos.x, boss->pos.y });
+}
+
+
+
+
 
 int main() {
 
@@ -477,7 +543,7 @@ int main() {
         tentacle[i].dir.y = 0;
         tentacle[i].pos.x = 0;
         tentacle[i].pos.y = 0;
-        tentacle[i].vitesse = 0.05;
+        tentacle[i].vitesse = 0.0075f;
         tentacle[i].exist = 0;
         tentacle[i].angle = -90;
         tentacle[i].norme = 0;
@@ -500,11 +566,11 @@ int main() {
     boss.dir.y = 0;
     boss.pos.x = 0;
     boss.pos.y = 0;
-    boss.vitesse = 0.025;
+    boss.vitesse = 0.008;
     boss.ugly = 0;
     boss.angle = -90;
     boss.norme = 0;
-    boss.hp = 30;
+    boss.hp = 20;
     sfSprite_setPosition(boss.sprite, (sfVector2f) { boss.pos.x, boss.pos.y });
     sfSprite_setTexture(boss.sprite, boss.texture, sfTrue);
 
@@ -564,7 +630,6 @@ int main() {
 
     spriteL = sfSprite_create();
     textureL = sfTexture_createFromFile("Sprites/lumière.png", NULL);
-    textureL = sfTexture_createFromFile("Sprites/lumière.png", NULL);
     sfSprite_setPosition(spriteL, (sfVector2f) {
         joueur.pos.x, joueur.pos.y
     });
@@ -574,7 +639,7 @@ int main() {
 
     int press = 0;
     int delai;
-    int apparition = 5000;
+    int apparition = 3000;
     int lostLife = 0;
     int delaiTxt = 6000;
     int gameState = 0;
@@ -648,20 +713,19 @@ int main() {
 
             if (sfKeyboard_isKeyPressed(sfKeySpace)) {
                 if (!press) {
+                    //easy mode
                     if (sfSprite_getPosition(arrow).x == 300 && sfSprite_getPosition(arrow).y == 350) {
-                        for (int i = 0; i < 20; i++) {
-                            tentacle[i].vitesse = 0.05;
-                        }
-                        apparition = 8000;
+                        apparition = 5000;
                         gameState = 1;
                     }
+                    //hard mode
                     if (sfSprite_getPosition(arrow).y == 390) {
                         for (int i = 0; i < 20; i++) {
-                            tentacle[i].vitesse = 0.11;
+                            tentacle[i].vitesse = 0.01f;
                         }
-                        apparition = 3000;
                         gameState = 1;
                     }
+                    //normal mode
                     if (sfSprite_getPosition(arrow).y == 370) {
                         gameState = 1;
                     }
@@ -763,7 +827,6 @@ int main() {
                     boss.ugly = 0;
                 }
             }
-            printf("%d x : %f, y : %f\n", boss.ugly, boss.pos.x, boss.pos.y);
             gestionEnnemis(&tentacle, &joueur, &bullet, 0, &lostLife, affScore, boss);
 
             sfSprite_setRotation(spriteL, joueur.angle - 90);
@@ -840,72 +903,25 @@ int main() {
             sfRenderWindow_display(window);
         }
 
+        //game over preparation
         sfRenderWindow_clear(window, sfBlack);
         sfClock_restart(eventLostLife);
         delaiTxt = timer(eventLostLife);
         sfColor gameOverClr;
         int restart = 0;
+        int retry = 0;
         sfText_setPosition(life, (sfVector2f) { 150, 350 });
         sfText_setColor(life, (sfColor) { 255, 0, 0, 255 });
         sfText_setColor(gameOver, (sfColor) { 255, 0, 0, 0 });
-        for (int i = 0; i < 10; i++) {
-            bullet[i].dir.x = 0;
-            bullet[i].dir.y = 0;
-            bullet[i].pos.x = 250;
-            bullet[i].pos.y = 250;
-            bullet[i].vitesse = 0.5;
-            bullet[i].visible = 0;
-            bullet[i].force.x = 0;
-            bullet[i].force.y = 0;
-            bullet[i].angle = -90;
-            sfSprite_setPosition(bullet[i].sprite, (sfVector2f) { bullet[i].pos.x, bullet[i].pos.y });
-        }
-        for (int i = 0; i < 20; i++) {
-            tentacle[i].dir.x = 0;
-            tentacle[i].dir.y = 0;
-            tentacle[i].pos.x = 0;
-            tentacle[i].pos.y = 0;
-            tentacle[i].vitesse = 0.025;
-            tentacle[i].exist = 0;
-            tentacle[i].angle = -90;
-            tentacle[i].norme = 0;
-            sfSprite_setPosition(tentacle[i].sprite, (sfVector2f) { tentacle[i].pos.x, tentacle[i].pos.y });
-        }
-        joueur.pos = (sfVector2f){ 500,500 };
-        joueur.angle = -90;
-        joueur.angleMax = 120;
-        joueur.angleMin = 60;
-        joueur.vitesse = 1;
-        joueur.fwd = (sfVector2f){ 0,0 };
-        joueur.force = (sfVector2f){ 0,0 };
-        joueur.life = 3;
-        joueur.score = 0;
-        boss.dir.x = 0;
-        boss.dir.y = 0;
-        boss.pos.x = 0;
-        boss.pos.y = 0;
-        boss.vitesse = 0.0125;
-        boss.ugly = 0;
-        boss.angle = -90;
-        boss.norme = 0;
-        boss.hp = 20;
-        sfSprite_setPosition(joueur.sprite, (sfVector2f) { joueur.pos.x, joueur.pos.y });
-        sfSprite_setPosition(arrow, (sfVector2f) { 400, 700 });
-        sfSprite_setPosition(test, (sfVector2f) { 0, 0 });
-        sfSprite_setTexture(test, textureTest, sfTrue);
-        sfSprite_setPosition(test1, (sfVector2f) { 0, -1000 });
-        sfSprite_setTexture(test1, textureTest, sfTrue);
-        sfSprite_setPosition(test2, (sfVector2f) { 0, -2000 });
-        sfSprite_setTexture(test2, textureTest, sfTrue);
-        sfSprite_setPosition(spriteL, (sfVector2f) { joueur.pos.x, joueur.pos.y });
         sfText_setString(affScore, joueur.score);
         press = 0;
-        apparition = 5000;
+        apparition = 3000;
         lostLife = 0;
         delaiTxt = 6000;
         transition = 0;
         sfText_setPosition(life, (sfVector2f) { 100, 250 });
-        sfSprite_setPosition(arrow, (sfVector2f) { 400, 700 });
+        sfSprite_setPosition(arrow, (sfVector2f) { 200, 350 });
+
         while (gameState == 2) {
             while (sfRenderWindow_pollEvent(window, &event)) {
                 if (event.type == sfEvtClosed)
@@ -937,6 +953,14 @@ int main() {
                 }
                 if (sfKeyboard_isKeyPressed(sfKeyUp)) {
                     if (!press) {
+                        /*if (sfSprite_getPosition(arrow).y == 800) {
+                            sfSprite_setPosition(arrow, (sfVector2f) { 400, 700 });
+                        }
+                        if (sfSprite_getPosition(arrow).y == 740) {
+                            sfSprite_setPosition(arrow, (sfVector2f) { 600, 700 });
+                        }
+                        if (sfSprite_getPosition(arrow).y == 780) {
+                            sfSprite_setPosition(arrow, (sfVector2f) { 600, 740 });*/
                         if (sfSprite_getPosition(arrow).y == 400) {
                             sfSprite_setPosition(arrow, (sfVector2f) { 200, 350 });
                         }
@@ -949,26 +973,32 @@ int main() {
                     }
                     press = 1;
                 }
+
                 if (sfKeyboard_isKeyPressed(sfKeySpace)) {
                     if (!press) {
+                        //easy mode
                         if (sfSprite_getPosition(arrow).x == 300 && sfSprite_getPosition(arrow).y == 350) {
-                            for (int i = 0; i < 20; i++) {
-                                tentacle[i].vitesse = 0.025;
-                            }
-                            apparition = 8000;
+                            apparition = 5000;
                             gameState = 1;
+                            retry = 1;
+                            
                         }
+                        //hard mode
                         if (sfSprite_getPosition(arrow).y == 390) {
                             for (int i = 0; i < 20; i++) {
-                                tentacle[i].vitesse = 0.05;
+                                tentacle[i].vitesse = 0.01f;
                             }
-                            apparition = 3000;
                             gameState = 1;
+                            retry = 1;
+                            
                         }
+                        //normal mode
                         if (sfSprite_getPosition(arrow).y == 370) {
                             gameState = 1;
+                            retry = 1;
+                            
                         }
-                        if (sfSprite_getPosition(arrow).y == 300 && sfSprite_getPosition(arrow).x == 200) {
+                        if (sfSprite_getPosition(arrow).y == 350 && sfSprite_getPosition(arrow).x == 200) {
                             sfSprite_setPosition(arrow, (sfVector2f) { 300, 350 });
                         }
                         if (sfSprite_getPosition(arrow).y == 400) {
@@ -994,6 +1024,18 @@ int main() {
             sfRenderWindow_display(window);
 
             delaiTxt = timer(eventLostLife);
+        }
+        if (retry) {
+            sfSprite_setPosition(test, (sfVector2f) { 0, 0 });
+            sfSprite_setTexture(test, textureTest, sfTrue);
+            sfSprite_setPosition(test1, (sfVector2f) { 0, -1000 });
+            sfSprite_setTexture(test1, textureTest, sfTrue);
+            sfSprite_setPosition(test2, (sfVector2f) { 0, -2000 });
+            sfSprite_setTexture(test2, textureTest, sfTrue);
+            ResetStats(tentacle, &boss, bullet, &joueur);
+            sfSprite_setPosition(spriteL, (sfVector2f) { joueur.pos.x, joueur.pos.y });
+            delaiTxt = 6000;
+            continue;
         }
 
 
