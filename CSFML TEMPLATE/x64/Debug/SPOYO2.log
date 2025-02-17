@@ -1,2 +1,0 @@
-﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(531,5): warning MSB8028: Le répertoire intermédiaire (x64\Debug\) contient des fichiers partagés provenant d'un autre projet (SPOYO2.vcxproj). Cela peut entraîner un comportement de nettoyage et de regénération incorrect.
-  SPOYO2.vcxproj -> C:\Users\Durand\Desktop\Dev\Quetes\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\x64\Debug\Asteroids.exe
