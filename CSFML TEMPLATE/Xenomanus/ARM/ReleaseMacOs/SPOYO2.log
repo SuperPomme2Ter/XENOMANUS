@@ -59,8 +59,4 @@ C:\Users\Durand\Desktop\Dev\Quetes\B1\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE
 C:\Users\Durand\Desktop\Dev\Quetes\B1\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(1052,30): warning C4133: 'fonction' : types incompatibles - de 'sfTexture *' à 'sfSprite *'
 C:\Users\Durand\Desktop\Dev\Quetes\B1\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(415,15): warning C4101: 'spriteF' : variable locale non référencée
 C:\Users\Durand\Desktop\Dev\Quetes\B1\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(414,16): warning C4101: 'textureF' : variable locale non référencée
-C:\Users\Durand\Desktop\Dev\Quetes\B1\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(280,1): warning C4716: 'gestionEnnemis' : doit retourner une valeur
-C:\Users\Durand\Desktop\Dev\Quetes\B1\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(171,1): warning C4716: 'ResetBullet' : doit retourner une valeur
-C:\Users\Durand\Desktop\Dev\Quetes\B1\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(341,1): warning C4716: 'gestionBoss' : doit retourner une valeur
-C:\Users\Durand\Desktop\Dev\Quetes\B1\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\main.c(390,1): warning C4716: 'ResetStats' : doit retourner une valeur
-  SPOYO2.vcxproj -> C:\Users\Durand\Desktop\Dev\Quetes\B1\Quete 3 Asteroids\Asteroids\CSFML TEMPLATE\x64\Debug\Xenomanus.exe
+Xenomanus\ARM\ReleaseMacOs\main.obj : fatal error LNK1112: type d'ordinateur module 'x86' en conflit avec le type d'ordinateur cible 'ARM'
